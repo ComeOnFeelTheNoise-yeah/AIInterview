@@ -3,9 +3,8 @@ import React, { useState, useEffect } from 'react';
 
 const App = () => {
   return (
-    <div>hi</div>
+    <div>hi jiwoo</div>
   )
 } 
 
 export default App;
- 

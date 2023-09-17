@@ -1,26 +1,19 @@
-package com.react.project.entity;
+package com.react.project.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "User")
-@Table(name = "User")
-public class UserEntity {
-    @Id
+public class SignUpDto {
     private String userEmail;
     private String userPassword;
+    private String userPasswordCheck;
     private String userNickname;
     private String userName;
     private String userPhoneNumber;
     private String userAddress;
-    private String userProfile;
+    private String userAddressDetail;
 }

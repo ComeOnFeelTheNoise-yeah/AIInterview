@@ -1,6 +1,6 @@
 package com.react.project.dto;
 
-import com.react.project.entity.UserEntity;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignInResponseDto {
-    private String token;
-    private int exprTime;
-    private UserEntity user;
+public class SignInDto {
+    @NotBlank
+    private String userEmail;
+    @NotBlank
+    private String userPassword;
 }

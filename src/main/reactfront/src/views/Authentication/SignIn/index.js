@@ -1,16 +1,18 @@
 import React, {useState} from "react";
-import {Box, Button, Card, CardActions, CardContent, TextField} from "@mui/material";
+import {Box, Button, Card, TextField} from "@mui/material";
 import axios from "axios";
 import {useCookies} from "react-cookie";
 import {useUserStore} from "../../../stores";
+import Typography from "@mui/material/Typography";
+import {signInApi} from "../../../apis";
 
-export default function SignIn(){
+export default function SignIn({setAuthView}){
     const [userEmail, setUserEmail] = useState('');
     const [userPassword, setUserPassword] = useState('');
 
     const [cookies, setCookies] = useCookies();
     const {user, setUser} = useUserStore();
-    const signInHandler = () =>{
+    const signInHandler = async () =>{
         if(userEmail.length === 0 || userPassword.length === 0){
             alert('이메일과 비밀번호를 입력하세요. ');
             return;
@@ -20,28 +22,29 @@ export default function SignIn(){
             userEmail,
             userPassword
         }
-        axios.post("http://localhost:8080/api/auth/signIn", data).then((response) => {
-            const responseData = response.data;
-            console.log(responseData);
-            if(!responseData.result){
-                alert('로그인 실패1');
-                return;
-            }
-            const {token, exprTime, user} = responseData.data;
-            const expires = new Date();
-            expires.setMilliseconds(expires.getMilliseconds() + exprTime);
-            setCookies('token', token, {expires});
-            setUser(user);
-        }).catch((error) => {
-            console.log(error);
-            alert('로그인 실패2');
-        });
+
+        const signInResponse = await signInApi(data);
+        if(!signInResponse){
+            alert('로그인 실패');
+            return;
+        }
+
+        if(!signInResponse.result){
+            alert('로그인 실패');
+            return;
+        }
+        const {token, exprTime, user} = signInResponse.data;
+        const expires = new Date();
+        expires.setMilliseconds(expires.getMilliseconds() + exprTime);
+        setCookies('token', token, {expires});
+        setUser(user);
     }
     return(
-        <Card sx={{ minWidth: 275, maxWidth: "50vw" }}>
-            {user != null && (<>{user.userNickname}</>)}
-            <CardContent>
-                <Box>
+        <Card sx={{ minWidth: 275, maxWidth: "50vw", padding: 5 }}>
+            <Box>
+                <Typography variant='h5'>로그인</Typography>
+            </Box>
+                <Box height={'50vh'} >
                     <TextField
                         fullWidth
                         label="이메일"
@@ -57,12 +60,15 @@ export default function SignIn(){
                         onChange={(e) => setUserPassword(e.target.value)}
                     />
                 </Box>
-            </CardContent>
-            <CardActions>
-                <Button fullWidth onClick={() => signInHandler()} variant="contained">
-                    로그인
-                </Button>
-            </CardActions>
+                <Box component='div'>
+                    <Button fullWidth onClick={() => signInHandler()} variant="contained">
+                        로그인
+                    </Button>
+                </Box>
+                <Box component='div' display='flex' mt={2}>
+                    <Typography>신규 사용자 이신가요?</Typography>
+                    <Typography fontWeight={800} ml={1} onClick={() => setAuthView(true)}>회원가입</Typography>
+                </Box>
         </Card>
     )
 }

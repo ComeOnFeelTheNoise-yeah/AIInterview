@@ -8,6 +8,8 @@ import com.react.project.entity.UserEntity;
 import com.react.project.repository.UserRepository;
 import com.react.project.security.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +19,8 @@ public class AuthService {
     UserRepository userRepository;
     @Autowired
     TokenProvider tokenProvider;
+
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     public ResponseDto<?> signUp(SignUpDto dto){
         String userEmail = dto.getUserEmail();
         String userPassword = dto.getUserPassword();
@@ -37,6 +41,10 @@ public class AuthService {
 
         // UserEntity 생성
         UserEntity userEntity = new UserEntity(dto);
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(userPassword);
+        userEntity.setUserPassword(encodedPassword);
+
         try{
             // UserRepository를 이용해서 데이터베이스에 Entity 저장
             userRepository.save(userEntity);
@@ -51,18 +59,18 @@ public class AuthService {
     public ResponseDto<SignInResponseDto> signIn(SignInDto dto){
         String userEmail = dto.getUserEmail();
         String userPassword = dto.getUserPassword();
-        try {
-            boolean existed = userRepository.existsByUserEmailAndUserPassword(userEmail, userPassword);
-            if(!existed){
-                return ResponseDto.setFailed("Sign In Information Does Not Match");
-            }
-        }catch (Exception e) {
-            return ResponseDto.setFailed("Database Error");
-        }
 
         UserEntity userEntity = null;
         try {
-            userEntity = userRepository.findById(userEmail).get();
+            userEntity = userRepository.findByUserEmail(userEmail);
+            // 잘못된 이메일
+            if(userEntity == null){
+                return ResponseDto.setFailed("Sign In Failed");
+            }
+            // 잘못된 비밀번호
+            if(!passwordEncoder.matches(userPassword, userEntity.getUserPassword())){
+                return ResponseDto.setFailed("Sign In Failed");
+            }
         }catch (Exception e){
             return ResponseDto.setFailed("Database Error");
         }

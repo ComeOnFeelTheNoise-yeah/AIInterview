@@ -1,7 +1,10 @@
 import React from "react";
+import ChatWindow from "../../components/ChatWindow";
 
 export default function ProjectMain(){
     return (
-        <div style={{height: '100vh', backgroundColor: '#99aa00'}}>Project Main</div>
+        <div>
+            <ChatWindow />
+        </div>
     )
 }

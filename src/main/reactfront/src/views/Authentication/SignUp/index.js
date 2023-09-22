@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {Box, Button, Card, TextField} from "@mui/material";
 import Typography from "@mui/material/Typography";
@@ -17,10 +17,32 @@ export default function SignUp({setAuthView}){
     // 유효성 검사 상태 추가
     const [validationErrors, setValidationErrors] = useState({});
 
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+        script.async = true;
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
+
     // 주소 검색 버튼 핸들러
     const searchAddress = () => {
-        // daum.Postcode API 또는 다른 주소 검색 방법 사용
-        // 결과로 주소 상태 업데이트
+        new window.daum.Postcode({
+            oncomplete: function(data) {
+                let addr = ''; // 주소 변수
+                // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                    addr = data.roadAddress;
+                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                    addr = data.jibunAddress;
+                }
+                // React 상태 업데이트
+                setUserAddress(addr); // state 업데이트 함수는 상황에 맞게 수정하세요.
+            }
+        }).open();
     };
 
     const validateForm = () => {
@@ -110,27 +132,51 @@ export default function SignUp({setAuthView}){
             </Box>
                 <Box height={'65vh'}>
                     <label>
-                        <TextField fullWidth label="이메일 주소" type="email" variant="standard" onChange={(e) => setUserEmail(e.target.value)} />
+                        <Box display="flex" alignItems="center">
+                            <TextField fullWidth sx={{ width: '50%' }} label="이메일 주소" type="email" variant="standard" onChange={(e) => setUserEmail(e.target.value)} />
+                        </Box>
                         {validationErrors.userEmail && <Typography color="error">{validationErrors.userEmail}</Typography>}
                     </label>
                     <label>
-                        <TextField fullWidth label="비밀번호" type="password" variant="standard" onChange={(e) => setUserPassword(e.target.value)}/>
+                        <Box display="flex" alignItems="center">
+                            <TextField fullWidth sx={{ width: '50%' }} label="비밀번호" type="password" variant="standard" onChange={(e) => setUserPassword(e.target.value)}/>
+                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }}>
+                                4~12자, 영문, 숫자 혼용
+                            </Typography>
+                        </Box>
                         {validationErrors.userPassword && <Typography color="error">{validationErrors.userPassword}</Typography>}
                     </label>
                     <label>
-                        <TextField fullWidth label="비밀번호 확인" type="password" variant="standard" onChange={(e) => setUserPasswordCheck(e.target.value)}/>
+                        <Box display="flex" alignItems="center">
+                            <TextField fullWidth sx={{ width: '50%' }} label="비밀번호 확인" type="password" variant="standard" onChange={(e) => setUserPasswordCheck(e.target.value)} />
+                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }}>
+                                비밀번호 확인
+                            </Typography>
+                        </Box>
                         {validationErrors.userPasswordCheck && <Typography color="error">{validationErrors.userPasswordCheck}</Typography>}
                     </label>
                     <label>
-                        <TextField fullWidth label="이름" variant="standard" onChange={(e) => setUserName(e.target.value)}/>
+                        <Box display="flex" alignItems="center">
+                            <TextField fullWidth sx={{ width: '50%' }} label="이름" variant="standard" onChange={(e) => setUserName(e.target.value)} />
+                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }}>
+                                한글 2~4자 이내
+                            </Typography>
+                        </Box>
                         {validationErrors.userName && <Typography color="error">{validationErrors.userName}</Typography>}
                     </label>
                     <label>
-                        <TextField fullWidth label="닉네임" variant="standard" onChange={(e) => setUserNickname(e.target.value)}/>
+                        <Box display="flex" alignItems="center">
+                            <TextField fullWidth sx={{ width: '50%' }} label="닉네임" variant="standard" onChange={(e) => setUserNickname(e.target.value)} />
+                        </Box>
                         {validationErrors.userNickname && <Typography color="error">{validationErrors.userNickname}</Typography>}
                     </label>
                     <label>
-                        <TextField fullWidth label="휴대폰 번호" variant="standard" onChange={(e) => setUserPhoneNumber(e.target.value)}/>
+                        <Box display="flex" alignItems="center">
+                            <TextField fullWidth sx={{ width: '50%' }} label="휴대폰 번호" variant="standard" onChange={(e) => setUserPhoneNumber(e.target.value)} />
+                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }}>
+                                '-'없이 숫자만 입력
+                            </Typography>
+                        </Box>
                         {validationErrors.userPhoneNumber && <Typography color="error">{validationErrors.userPhoneNumber}</Typography>}
                     </label>
                     <label>
@@ -139,7 +185,9 @@ export default function SignUp({setAuthView}){
                                 fullWidth
                                 label="주소"
                                 InputProps={{readOnly: true,}}
+                                InputLabelProps={{ shrink: userAddress ? true : undefined }}
                                 variant="standard"
+                                value={userAddress}
                                 onChange={(e) => setUserAddress(e.target.value)}
                                 flexGrow={1}
                             />
@@ -150,7 +198,12 @@ export default function SignUp({setAuthView}){
                         {validationErrors.userAddress && <Typography color="error">{validationErrors.userAddress}</Typography>}
                     </label>
                     <label>
-                        <TextField fullWidth label="상세 주소" variant="standard" onChange={(e) => setUserAddressDetail(e.target.value)}/>
+                        <Box display="flex" alignItems="center">
+                            <TextField fullWidth sx={{ width: '50%' }} label="상세 주소" variant="standard" onChange={(e) => setUserAddressDetail(e.target.value)} />
+                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }}>
+                                상세 주소 입력
+                            </Typography>
+                        </Box>
                         {validationErrors.userAddressDetail && <Typography color="error">{validationErrors.userAddressDetail}</Typography>}
                     </label>
                 </Box>

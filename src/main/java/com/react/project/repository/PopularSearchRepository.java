@@ -5,7 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import com.react.project.entity.PopularSearchEntity;
 
+import java.util.List;
+
 @Repository
 public interface PopularSearchRepository extends JpaRepository<PopularSearchEntity, String> {
-
+    public List<PopularSearchEntity> findByOrderByPopularSearchCountDesc();
 }

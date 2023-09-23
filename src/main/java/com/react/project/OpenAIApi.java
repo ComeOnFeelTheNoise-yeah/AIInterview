@@ -1,5 +1,6 @@
 package com.react.project;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -9,22 +10,25 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class OpenAIApi {
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "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";
 
     public String ask(String prompt){
         String responeBody = "";
-        String formattedPrompt = String.format("답변은 한국어로 해주세요: %s", prompt);
+
+        JSONArray messages = new JSONArray();
+        messages.put(new JSONObject().put("role", "system").put("content", "You are a helpful assistant."));
+        messages.put(new JSONObject().put("role", "user").put("content", prompt));
 
         JSONObject jsonBody = new JSONObject();
-        jsonBody.put("prompt", formattedPrompt);
-        jsonBody.put("max_tokens", 50);
-        jsonBody.put("n", 1);
-        jsonBody.put("temperature", 0.7);
+        jsonBody.put("messages", messages);
+        jsonBody.put("max_tokens", 150);
+        jsonBody.put("temperature", 0.8);
+        jsonBody.put("model", "gpt-3.5-turbo");
 
         try{
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.openai.com/v1/engines/text-davinci-002/completions"))
+                    .uri(URI.create("https://api.openai.com/v1/chat/completions"))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + API_KEY)
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody.toString()))
@@ -44,13 +48,20 @@ public class OpenAIApi {
         JSONObject jsonObject = new JSONObject(responseJson);
 
         if(jsonObject.has("choices")){
-            return jsonObject.getJSONArray("choices")
-                    .getJSONObject(0)
-                    .getString("text")
-                    .trim();
-        }else{
-            System.out.println(responseJson);
-            return "API 호출 중 오류가 발생했습니다. ";
+            JSONObject choice = jsonObject.getJSONArray("choices").getJSONObject(0);
+            if(choice.has("message")) { // message 키가 있는지 확인
+                JSONObject message = choice.getJSONObject("message");
+                if(message.has("content")) { // content 키가 있는지 확인
+                    return message.getString("content").trim();
+                } else {
+                    System.out.println("Error: 'content' key not found in message: " + message.toString());
+                }
+            } else {
+                System.out.println("Error: 'message' key not found in choice: " + choice.toString());
+            }
+        } else {
+            System.out.println("Error: 'choices' key not found in response: " + responseJson);
         }
+        return "API 호출 중 오류가 발생했습니다. ";
     }
 }

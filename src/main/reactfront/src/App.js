@@ -4,11 +4,12 @@ import axios from "axios";
 import SignUp from "./views/Authentication/SignUp";
 import Authentication from "./views/Authentication";
 import MainLayout from "./views/layouts/MainLayout";
+import ChatWindow from "./components/ChatWindow";
 
 const App = () => {
 
   return (
-    <MainLayout/>
+    <ChatWindow/>
   )
 } 
 

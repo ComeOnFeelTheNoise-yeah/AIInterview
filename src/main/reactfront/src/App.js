@@ -10,7 +10,7 @@ import ProjectMain from "./views/ProjectMain";
 const App = () => {
 
   return (
-    <ProjectMain/>
+    <ChatWindow/>
   )
 } 
 

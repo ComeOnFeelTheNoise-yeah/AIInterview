@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import {signUpApi} from "../../../apis";
 
 export default function SignUp({setAuthView}){
+    const Purple4th = '#999aae';
     const [userEmail, setUserEmail] = useState('');
     const [userPassword, setUserPassword] = useState('');
     const [userPasswordCheck, setUserPasswordCheck] = useState('');
@@ -126,97 +127,173 @@ export default function SignUp({setAuthView}){
     }
 
     return (
-        <Card sx={{ minWidth: 275, maxWidth: "50vw", padding: 5 }}>
-            <Box>
-                <Typography variant='h5'>회원가입</Typography>
-            </Box>
-                <Box height={'65vh'}>
+        <container style={{
+            position: 'absolute', top: "0%",
+            left: "0%", width: "100%", height: "100%", backgroundColor: Purple4th
+        }}>
+            <div style={{position: 'relative'}}>
+                <div>
+                    <img alt="loginBackground" src="/img/img/registerBackground.png" width="100%"/>
+                </div>
+                <div>
                     <label>
                         <Box display="flex" alignItems="center">
-                            <TextField fullWidth sx={{ width: '50%' }} label="이메일 주소" type="email" variant="standard" onChange={(e) => setUserEmail(e.target.value)} />
+                            <TextField fullWidth sx={{ width: '20%' }} label="이메일 주소" type="email" variant="standard" onChange={(e) => setUserEmail(e.target.value)} style={{
+                                fontSize: '1.9vw', position: 'absolute', top: "30%",
+                                left: "60%", transform: "translate( -30%, -60%)"
+                            }} />
+                            {validationErrors.userEmail && <Typography color="error" style={{
+                                fontSize: '0.65vw', position: 'absolute', top: "33%",
+                                left: "57.3%", transform: "translate( -30%, -60%)"
+                            }}>{validationErrors.userEmail}</Typography>}
                         </Box>
-                        {validationErrors.userEmail && <Typography color="error">{validationErrors.userEmail}</Typography>}
                     </label>
                     <label>
                         <Box display="flex" alignItems="center">
-                            <TextField fullWidth sx={{ width: '50%' }} label="비밀번호" type="password" variant="standard" onChange={(e) => setUserPassword(e.target.value)}/>
-                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }}>
+                            <TextField
+                                fullWidth sx={{ width: '20%' }}
+                                label="비밀번호"
+                                type="password"
+                                variant="standard"
+                                onChange={(e) => setUserPassword(e.target.value)} style={{
+                                fontSize: '1.9vw', position: 'absolute', top: "36%",
+                                left: "60%", transform: "translate( -30%, -60%)"
+                            }}/>
+                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }} style={{
+                                fontSize: '0.7vw', position: 'absolute', top: "37%",
+                                left: "67%", transform: "translate( -30%, -60%)"
+                            }}>
                                 4~12자, 영문, 숫자 혼용
                             </Typography>
                         </Box>
-                        {validationErrors.userPassword && <Typography color="error">{validationErrors.userPassword}</Typography>}
+                        {validationErrors.userPassword && <Typography color="error" style={{
+                            fontSize: '0.65vw', position: 'absolute', top: "39%",
+                            left: "59.8%", transform: "translate( -30%, -60%)"
+                        }}>{validationErrors.userPassword}</Typography>}
                     </label>
                     <label>
                         <Box display="flex" alignItems="center">
-                            <TextField fullWidth sx={{ width: '50%' }} label="비밀번호 확인" type="password" variant="standard" onChange={(e) => setUserPasswordCheck(e.target.value)} />
-                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }}>
+                            <TextField fullWidth sx={{ width: '20%' }} label="비밀번호 확인" type="password" variant="standard" onChange={(e) => setUserPasswordCheck(e.target.value)} style={{
+                                fontSize: '1.9vw', position: 'absolute', top: "42%",
+                                left: "60%", transform: "translate( -30%, -60%)"
+                            }} />
+                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }} style={{
+                                fontSize: '0.7vw', position: 'absolute', top: "43%",
+                                left: "69%", transform: "translate( -30%, -60%)"
+                            }}>
                                 비밀번호 확인
                             </Typography>
                         </Box>
-                        {validationErrors.userPasswordCheck && <Typography color="error">{validationErrors.userPasswordCheck}</Typography>}
+                        {validationErrors.userPasswordCheck && <Typography color="error" style={{
+                            fontSize: '0.65vw', position: 'absolute', top: "45%",
+                            left: "56.9%", transform: "translate( -30%, -60%)"
+                        }}>{validationErrors.userPasswordCheck}</Typography>}
                     </label>
                     <label>
                         <Box display="flex" alignItems="center">
-                            <TextField fullWidth sx={{ width: '50%' }} label="이름" variant="standard" onChange={(e) => setUserName(e.target.value)} />
-                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }}>
+                            <TextField fullWidth sx={{ width: '20%' }} label="이름" variant="standard" onChange={(e) => setUserName(e.target.value)} style={{
+                                fontSize: '1.9vw', position: 'absolute', top: "48%",
+                                left: "60%", transform: "translate( -30%, -60%)"
+                            }} />
+                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }} style={{
+                                fontSize: '0.7vw', position: 'absolute', top: "49%",
+                                left: "68.5%", transform: "translate( -30%, -60%)"
+                            }}>
                                 한글 2~4자 이내
                             </Typography>
                         </Box>
-                        {validationErrors.userName && <Typography color="error">{validationErrors.userName}</Typography>}
+                        {validationErrors.userName && <Typography color="error" style={{
+                            fontSize: '0.65vw', position: 'absolute', top: "51%",
+                            left: "56.4%", transform: "translate( -30%, -60%)"
+                        }}>{validationErrors.userName}</Typography>}
                     </label>
                     <label>
                         <Box display="flex" alignItems="center">
-                            <TextField fullWidth sx={{ width: '50%' }} label="닉네임" variant="standard" onChange={(e) => setUserNickname(e.target.value)} />
+                            <TextField fullWidth sx={{ width: '20%' }} label="닉네임" variant="standard" onChange={(e) => setUserNickname(e.target.value)} style={{
+                                fontSize: '1.9vw', position: 'absolute', top: "54%",
+                                left: "60%", transform: "translate( -30%, -60%)"
+                            }} />
                         </Box>
-                        {validationErrors.userNickname && <Typography color="error">{validationErrors.userNickname}</Typography>}
+                        {validationErrors.userNickname && <Typography color="error" style={{
+                            fontSize: '0.65vw', position: 'absolute', top: "57%",
+                            left: "56.1%", transform: "translate( -30%, -60%)"
+                        }}>{validationErrors.userNickname}</Typography>}
                     </label>
                     <label>
                         <Box display="flex" alignItems="center">
-                            <TextField fullWidth sx={{ width: '50%' }} label="휴대폰 번호" variant="standard" onChange={(e) => setUserPhoneNumber(e.target.value)} />
-                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }}>
+                            <TextField fullWidth sx={{ width: '20%' }} label="휴대폰 번호" variant="standard" onChange={(e) => setUserPhoneNumber(e.target.value)} style={{
+                                fontSize: '1.9vw', position: 'absolute', top: "60%",
+                                left: "60%", transform: "translate( -30%, -60%)"
+                            }} />
+                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }} style={{
+                                fontSize: '0.7vw', position: 'absolute', top: "61%",
+                                left: "68%", transform: "translate( -30%, -60%)"
+                            }}>
                                 '-'없이 숫자만 입력
                             </Typography>
                         </Box>
-                        {validationErrors.userPhoneNumber && <Typography color="error">{validationErrors.userPhoneNumber}</Typography>}
+                        {validationErrors.userPhoneNumber && <Typography color="error" style={{
+                            fontSize: '0.65vw', position: 'absolute', top: "63%",
+                            left: "57.2%", transform: "translate( -30%, -60%)"
+                        }}>{validationErrors.userPhoneNumber}</Typography>}
                     </label>
                     <label>
                         <Box display='flex' alignItems='center' width='100%'>
                             <TextField
-                                fullWidth
+                                fullWidth sx={{ width: '20%' }}
                                 label="주소"
                                 InputProps={{readOnly: true,}}
                                 InputLabelProps={{ shrink: userAddress ? true : undefined }}
                                 variant="standard"
                                 value={userAddress}
                                 onChange={(e) => setUserAddress(e.target.value)}
+                                style={{
+                                    fontSize: '1.9vw', position: 'absolute', top: "66.5%",
+                                    left: "60%", transform: "translate( -30%, -60%)"
+                                }}
                                 flexGrow={1}
                             />
-                            <Button variant="contained" onClick={searchAddress} flexGrow={0} flexShrink={0}>
+                            <Button variant="contained" onClick={searchAddress} flexGrow={0} flexShrink={0} style={{
+                                fontSize: '0.7vw', position: 'absolute', top: "67%",
+                                left: "71%", transform: "translate( -30%, -60%)"
+                            }}>
                                 검색
                             </Button>
                         </Box>
-                        {validationErrors.userAddress && <Typography color="error">{validationErrors.userAddress}</Typography>}
+                        {validationErrors.userAddress && <Typography color="error" style={{
+                            fontSize: '0.65vw', position: 'absolute', top: "69.5%",
+                            left: "56.9%", transform: "translate( -30%, -60%)"
+                        }}>{validationErrors.userAddress}</Typography>}
                     </label>
                     <label>
                         <Box display="flex" alignItems="center">
-                            <TextField fullWidth sx={{ width: '50%' }} label="상세 주소" variant="standard" onChange={(e) => setUserAddressDetail(e.target.value)} />
-                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }}>
+                            <TextField fullWidth sx={{ width: '20%' }} label="상세 주소" variant="standard" onChange={(e) => setUserAddressDetail(e.target.value)} style={{
+                                fontSize: '1.9vw', position: 'absolute', top: "72.5%",
+                                left: "60%", transform: "translate( -30%, -60%)"
+                            }} />
+                            <Typography variant="body2" color="textSecondary" sx={{ ml: 2 }} style={{
+                                fontSize: '0.7vw', position: 'absolute', top: "73.5%",
+                                left: "69%", transform: "translate( -30%, -60%)"
+                            }}>
                                 상세 주소 입력
                             </Typography>
                         </Box>
-                        {validationErrors.userAddressDetail && <Typography color="error">{validationErrors.userAddressDetail}</Typography>}
+                        {validationErrors.userAddressDetail && <Typography color="error" style={{
+                            fontSize: '0.65vw', position: 'absolute', top: "75.5%",
+                            left: "56.5%", transform: "translate( -30%, -60%)"
+                        }}>{validationErrors.userAddressDetail}</Typography>}
                     </label>
-                </Box>
-            <Box component='div'>
-                <Button fullWidth onClick={() => signUpHandler()} variant="contained">
-                    회원가입
-                </Button>
-            </Box>
-            <Box component='div' display='flex' mt={2}>
-                <Typography>이미 계정이 있으신가요?</Typography>
-                <Typography fontWeight={800} ml={1} onClick={() => setAuthView(false)}>로그인</Typography>
-            </Box>
-        </Card>
 
+                </div>
+                <img alt="loginBackground" src="/img/img/signINBtn.png" width="10%" onClick={() => setAuthView(false)} style={{
+                    position: 'absolute', top: "81%",
+                    left: "39.2%", transform: "translate( -81.4%, -39.2%)"
+                }}/>
+                <img alt="loginBackground" src="/img/img/signUPBtn.png" width="10%" onClick={() => signUpHandler()} style={{
+                    position: 'absolute', top: "82%",
+                    left: "66.88%", transform: "translate( -83.1%, -66.88%)"
+                }}/>
+            </div>
+        </container>
     )
 }

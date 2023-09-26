@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import {signInApi} from "../../../apis";
 
 export default function SignIn({setAuthView}){
+    const Purple4th = '#999aae';
     const [userEmail, setUserEmail] = useState('');
     const [userPassword, setUserPassword] = useState('');
 
@@ -40,35 +41,65 @@ export default function SignIn({setAuthView}){
         setUser(user);
     }
     return(
-        <Card sx={{ minWidth: 275, maxWidth: "50vw", padding: 5 }}>
-            <Box>
-                <Typography variant='h5'>로그인</Typography>
-            </Box>
-                <Box height={'50vh'} >
-                    <TextField
-                        fullWidth
-                        label="이메일"
-                        type="email"
-                        variant="standard"
-                        onChange={(e) => setUserEmail(e.target.value)}
-                    />
-                    <TextField
-                        fullWidth
-                        label="비밀번호"
-                        type="password"
-                        variant="standard"
-                        onChange={(e) => setUserPassword(e.target.value)}
-                    />
-                </Box>
-                <Box component='div'>
-                    <Button fullWidth onClick={() => signInHandler()} variant="contained">
-                        로그인
-                    </Button>
-                </Box>
-                <Box component='div' display='flex' mt={2}>
-                    <Typography>신규 사용자 이신가요?</Typography>
-                    <Typography fontWeight={800} ml={1} onClick={() => setAuthView(true)}>회원가입</Typography>
-                </Box>
-        </Card>
+        <container style={{
+            position: 'absolute', top: "0%",
+            left: "0%", width: "100%", height: "100%", backgroundColor: Purple4th
+        }}>
+            <div style={{position: 'relative'}}>
+                <div>
+                    <img alt="loginBackground" src="/img/img/signINPage.png" width="100%"/>
+                </div>
+                <div>
+                    <label>
+                        <Box display="flex" alignItems="center" >
+                            <TextField
+                                fullWidth sx={{ width: '20%' }}
+                                label="이메일"
+                                type="email"
+                                variant="standard"
+                                onChange={(e) => setUserEmail(e.target.value)}
+                                style={{
+                                    fontSize: '1.9vw',
+                                    position: 'absolute',
+                                    top: "48%",
+                                    left: "38%",
+                                    transform: "translate(-50%, -60%)"
+                                }}
+                            />
+                            <TextField
+                                fullWidth sx={{ width: '20%' }}
+                                label="비밀번호"
+                                type="password"
+                                variant="standard"
+                                onChange={(e) => setUserPassword(e.target.value)}
+                                style={{
+                                    fontSize: '1.9vw',
+                                    position: 'absolute',
+                                    top: "55%",
+                                    left: "38%", // 수정: 왼쪽으로 이동
+                                    transform: "translate(-50%, -60%)" // 수정: 왼쪽으로 이동
+                                }}
+                            />
+                        </Box>
+                    </label>
+                </div>
+                <div style={{align :"center"}}>
+                    <text style={{
+                        position: 'absolute', top: "55.4%",
+                        left: "69.88%", transform: "translate( -70.1%, -66.88%)",fontSize : "22px",color : "white"
+                    }}>
+                        당신의 면접을 확실하게 준비해줄<br/> AI프로젝트 <br/>Be With you에 가입하세요!
+                    </text>
+                </div>
+                <img alt="loginBackground" src="/img/img/LoginSignINBtn.png" width="10%" onClick={() => signInHandler()} style={{
+                    position: 'absolute', top: "70.1%",
+                    left: "39.2%", transform: "translate( -70.1%, -39.2%)"
+                }}/>
+                <img alt="loginBackground" src="/img/img/LoginSignUpBtn.png" width="10%" onClick={() => setAuthView(true)} style={{
+                    position: 'absolute', top: "70.9%",
+                    left: "66.88%", transform: "translate( -70.1%, -66.88%)"
+                }}/>
+            </div>
+        </container>
     )
 }

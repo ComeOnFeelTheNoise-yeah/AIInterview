@@ -20,6 +20,10 @@ public class ProjectController {
     @Autowired
     BoardService boardService;
 
+    @GetMapping("/")
+    public String getProject(@AuthenticationPrincipal String userEmail){
+        return "로그인된 사용자는 " + userEmail + "입니다. ";
+    }
     @GetMapping("/top3")
     public ResponseDto<List<BoardEntity>> getTop3(){
         return boardService.getTop3();

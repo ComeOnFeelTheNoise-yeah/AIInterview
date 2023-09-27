@@ -29,7 +29,8 @@ export default function MainLayout(){
         }else{
             setProjectResponse('');
         }
-    }, [cookies.token]);
+        console.log('projectResponse: ', projectResponse); // 상태 변화 확인
+    }, [cookies.token, projectResponse]);
 
     return (
         <>

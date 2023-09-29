@@ -5,6 +5,8 @@ import ProjectMain from "../../ProjectMain";
 import {useUserStore} from "../../../stores";
 import {useCookies} from "react-cookie";
 import axios from "axios";
+import Routing from "../../../Routing";
+import { BrowserRouter } from "react-router-dom";
 
 export default function MainLayout(){
     const [projectResponse, setProjectResponse] = useState('');
@@ -33,9 +35,11 @@ export default function MainLayout(){
     }, [cookies.token, projectResponse]);
 
     return (
-        <>
-            <Navigation />
-            {projectResponse ? (<ProjectMain />) : (<Authentication />)}
-        </>
+        <BrowserRouter>
+            <>
+                {projectResponse ? (<Navigation />) : ""}
+                {projectResponse ? (<Routing />) : (<Authentication />)}
+            </>
+        </BrowserRouter>
     )
 }

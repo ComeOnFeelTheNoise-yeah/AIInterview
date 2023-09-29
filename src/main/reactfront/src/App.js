@@ -1,11 +1,13 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
+import axios from "axios";
+import MainLayout from "./views/layouts/MainLayout";
 
 const App = () => {
+
   return (
-    <div>hi</div>
+    <MainLayout/>
   )
 } 
 
 export default App;
- 

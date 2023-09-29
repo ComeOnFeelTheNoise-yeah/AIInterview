@@ -68,9 +68,11 @@ export default function Navigation() {
                             </Link>
                         </Button>
                         <Button variant="text" color="inherit" sx={{ marginRight: '20px' }}>
-                            <Typography variant="h6" fontWeight="bold">
-                                결제
-                            </Typography>
+                            <Link to="/payment" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <Typography variant="h6" fontWeight="bold">
+                                    결제
+                                </Typography>
+                            </Link>
                         </Button>
                     </Typography>
                     {user ? (

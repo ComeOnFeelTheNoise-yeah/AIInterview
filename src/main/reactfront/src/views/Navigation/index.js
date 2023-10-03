@@ -115,6 +115,9 @@ export default function Navigation() {
                                         정보 수정
                                     </Link>
                                 </MenuItem>
+                                <MenuItem >
+                                    자소서 작성
+                                </MenuItem>
                                 <MenuItem onClick={() => {
                                     logOutHandler();
                                     handleMenuClose();

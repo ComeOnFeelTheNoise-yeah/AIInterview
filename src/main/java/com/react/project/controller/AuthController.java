@@ -84,4 +84,11 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
+    @PostMapping("/updateUserInfo")
+    public ResponseDto<?> updateUserInfo(@RequestBody UserEntity updatedInfo, @RequestHeader String Authorization) {
+        String token = Authorization.split(" ")[1];
+        String userEmail = tokenProvider.getEmailFromToken(token);
+        return authService.updateUserInfo(userEmail, updatedInfo);
+    }
+
 }

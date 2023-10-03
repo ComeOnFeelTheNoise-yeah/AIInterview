@@ -8,15 +8,32 @@ import IconButton from '@mui/material/IconButton';
 import {useUserStore} from "../../stores";
 import { Link } from 'react-router-dom';
 import {useCookies} from "react-cookie";
+import {useRef, useState} from "react";
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Avatar from '@mui/material/Avatar';
 
 export default function Navigation() {
     const [cookies, setCookies] = useCookies(['token']);
     const {user, removeUser} = useUserStore();
+    const [userProfile, setUserProfile] = useState(user ? user.userProfile : "path-to-default-image.jpg");
+    const [userNickname, setUserNickname] = useState(user ? user.userNickname : "");
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const profileBtnRef = useRef(null);
 
     const logOutHandler = () => {
         setCookies('token', '', {expires: new Date()});
         removeUser();
     }
+
+    const handleProfileClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -76,15 +93,40 @@ export default function Navigation() {
                         </Button>
                     </Typography>
                     {user ? (
-                        <Button color="inherit" onClick={() => logOutHandler()}>
-                            <Typography variant="h6" fontWeight="bold">
-                                Logout
+                        <>
+                            <Typography variant="h6" sx={{ marginRight: '10px' }}>
+                                {userNickname}
                             </Typography>
-                        </Button>
+                            <Avatar
+                                ref={profileBtnRef}
+                                src={userProfile}
+                                onClick={handleProfileClick}
+                                style={{ cursor: 'pointer', marginRight: '10px' }}
+                            />
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={handleMenuClose}
+                            >
+                                <MenuItem onClick={() => {
+                                    handleMenuClose();
+                                }}>
+                                    <Link to="/memberInfo" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                        정보 수정
+                                    </Link>
+                                </MenuItem>
+                                <MenuItem onClick={() => {
+                                    logOutHandler();
+                                    handleMenuClose();
+                                }}>
+                                    로그아웃
+                                </MenuItem>
+                            </Menu>
+                        </>
                     ) : (
                         <Button color="inherit" onClick={() => logOutHandler()}>
                             <Typography variant="h6" fontWeight="bold">
-                            Login
+                            로그인
                         </Typography>
                         </Button>
                     )}

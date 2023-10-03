@@ -82,4 +82,21 @@ public class AuthService {
         SignInResponseDto signInResponseDto = new SignInResponseDto(token, exprTime, userEntity);
         return ResponseDto.setSuccess("Sign In Success", signInResponseDto);
     }
+
+    public boolean isNicknameDuplicate(String userNickname) {
+        return userRepository.existsByUserNickname(userNickname);
+    }
+
+    public boolean verifyUserPassword(String userEmail, String userPassword) {
+        UserEntity userEntity = userRepository.findByUserEmail(userEmail);
+        if (userEntity != null) {
+            return passwordEncoder.matches(userPassword, userEntity.getUserPassword());
+        }
+        return false;
+    }
+
+    public UserEntity getUserByEmail(String userEmail) {
+        return userRepository.findByUserEmail(userEmail);
+    }
+
 }

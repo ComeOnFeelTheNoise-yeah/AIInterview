@@ -6,6 +6,7 @@ import Interview from "./views/Interview";
 import Analysis from "./views/Analysis";
 import Board from "./views/Board";
 import Payment from "./views/Payment";
+import MemberChange from "./views/MemberChange"
 
 export default function Routing(){
     return (
@@ -18,6 +19,7 @@ export default function Routing(){
                     <Route path='/analysis' element={<Analysis/>} />
                     <Route path='/board' element={<Board/>} />
                     <Route path='/payment' element={<Payment/>} />
+                    <Route path='/memberInfo' element={<MemberChange/>} />
                 </Routes>
             </div>
         </div>

@@ -32,5 +32,9 @@ public class UserEntity {
         this.userName = dto.getUserName();
         this.userAddress = dto.getUserAddress() + " " + dto.getUserAddressDetail();
         this.userPhoneNumber = dto.getUserPhoneNumber();
+        this.userProfile = dto.getUserProfile() != null && !dto.getUserProfile().isEmpty()
+                ? dto.getUserProfile()
+                : "src/main/reactfront/public/img/img/default_profile.png";
+
     }
 }

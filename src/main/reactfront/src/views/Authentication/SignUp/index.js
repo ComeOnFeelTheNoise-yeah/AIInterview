@@ -14,9 +14,13 @@ export default function SignUp({setAuthView}){
     const [userPhoneNumber, setUserPhoneNumber] = useState('');
     const [userAddress, setUserAddress] = useState('');
     const [userAddressDetail, setUserAddressDetail] = useState('');
+    const [userProfile, setUserProfile] = useState('');
+    const defaultProfilePic = "/img/img/default_profile.png";
 
     // 유효성 검사 상태 추가
     const [validationErrors, setValidationErrors] = useState({});
+    const [isNicknameValid, setIsNicknameValid] = useState(null);
+    const [isNicknameChecked, setIsNicknameChecked] = useState(false);
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -97,9 +101,24 @@ export default function SignUp({setAuthView}){
         return Object.keys(errors).length === 0;
     };
 
+    const checkNicknameDuplicate = async () => {
+        const response = await axios.post('/api/auth/checkNickname', { userNickname });
+        setIsNicknameChecked(true);
+        if (response.data.isDuplicate) {
+            alert('닉네임이 이미 사용 중입니다.');
+            setIsNicknameValid(false);
+        } else {
+            alert('사용 가능한 닉네임입니다.');
+            setIsNicknameValid(true);
+        }
+    }
+
     const signUpHandler = async () => {
 
         if (!validateForm()) return;
+        if (!isNicknameValid) {
+            return;
+        }
 
         const data = {
             userEmail,
@@ -109,7 +128,8 @@ export default function SignUp({setAuthView}){
             userName,
             userPhoneNumber,
             userAddress,
-            userAddressDetail
+            userAddressDetail,
+            userProfile: userProfile ? userProfile : defaultProfilePic
         }
 
         const signUpResponse = await signUpApi(data);
@@ -213,6 +233,30 @@ export default function SignUp({setAuthView}){
                                 fontSize: '1.9vw', position: 'absolute', top: "54%",
                                 left: "60%", transform: "translate( -30%, -60%)"
                             }} />
+                            {isNicknameChecked && (
+                                isNicknameValid ?
+                                    <Typography color="primary"
+                                                style={{
+                                                    fontSize: '0.7vw', position: 'absolute', top: "54.5%",
+                                                    left: "67%", transform: "translate( -30%, -60%)"
+                                                }}>
+                                        ✔️
+                                    </Typography>
+                                    :
+                                    <Typography color="error"
+                                                style={{
+                                                    fontSize: '0.7vw', position: 'absolute', top: "54.5%",
+                                                    left: "67%", transform: "translate( -30%, -60%)"
+                                                }}>
+                                        ❌
+                                    </Typography>
+                            )}
+                            <Button variant="contained" onClick={checkNicknameDuplicate} flexGrow={0} flexShrink={0} style={{
+                                fontSize: '0.7vw', position: 'absolute', top: "54.5%",
+                                left: "70%", transform: "translate( -30%, -60%)"
+                            }}>
+                                중복 검사
+                            </Button>
                         </Box>
                         {validationErrors.userNickname && <Typography color="error" style={{
                             fontSize: '0.65vw', position: 'absolute', top: "57%",

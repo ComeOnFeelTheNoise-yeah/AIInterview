@@ -2,7 +2,7 @@ import React from "react";
 
 const ChatMessage = ({message, isUser}) => {
     const messageStyle = {
-        marginBottom: isUser ? "16px" : "0",
+        marginBottom: isUser ? "16px" : "16px",
     };
 
     return (

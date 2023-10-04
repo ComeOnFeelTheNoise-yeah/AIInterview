@@ -115,8 +115,12 @@ export default function Navigation() {
                                         정보 수정
                                     </Link>
                                 </MenuItem>
-                                <MenuItem >
-                                    자소서 작성
+                                <MenuItem onClick={() => {
+                                    handleMenuClose();
+                                }}>
+                                    <Link to="/infoWrite" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                        자소서 작성
+                                    </Link>
                                 </MenuItem>
                                 <MenuItem onClick={() => {
                                     logOutHandler();

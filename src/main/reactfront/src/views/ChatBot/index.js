@@ -114,7 +114,7 @@ export default function ChatBot() {
                     ) : (
                         <Box display="flex" flexDirection="row" alignItems="center" width="100%" justifyContent="space-between">
                             <div style={{ flex: '1', minWidth: '80%' }}>
-                                <ChatWindow />
+                                <ChatWindow introContent={loadedContent} />
                             </div>
                             <div style={{ flex: '1', minWidth: '60%' }}>
                                 <Typography

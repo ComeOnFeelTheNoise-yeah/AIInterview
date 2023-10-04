@@ -22,7 +22,7 @@ public class AWSConfig {
     @Bean
     public S3Client s3Client() {
         return S3Client.builder()
-                .region(Region.EU_WEST_1) // 원하는 리전으로 설정
+                .region(Region.AP_NORTHEAST_2) // 원하는 리전으로 설정
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
                 .build();
     }

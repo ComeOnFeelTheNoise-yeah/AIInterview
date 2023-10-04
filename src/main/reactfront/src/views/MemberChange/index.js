@@ -177,9 +177,9 @@ export default function MemberChange() {
             });
 
             if (response.data.status === "success") {
-                alert("사용자 정보가 성공적으로 수정되었습니다.");
+                alert("사용자 정보가 성공적으로 수정되었습니다.1");
             } else {
-                alert("사용자 정보가 성공적으로 수정되었습니다.");
+                alert("사용자 정보가 성공적으로 수정되었습니다.2");
             }
         } catch (error) {
             console.error("Error updating user info:", error);

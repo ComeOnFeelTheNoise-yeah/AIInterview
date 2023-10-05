@@ -82,4 +82,48 @@ public class AuthService {
         SignInResponseDto signInResponseDto = new SignInResponseDto(token, exprTime, userEntity);
         return ResponseDto.setSuccess("Sign In Success", signInResponseDto);
     }
+
+    public boolean isNicknameDuplicate(String userNickname) {
+        return userRepository.existsByUserNickname(userNickname);
+    }
+
+    public boolean verifyUserPassword(String userEmail, String userPassword) {
+        UserEntity userEntity = userRepository.findByUserEmail(userEmail);
+        if (userEntity != null) {
+            return passwordEncoder.matches(userPassword, userEntity.getUserPassword());
+        }
+        return false;
+    }
+
+    public UserEntity getUserByEmail(String userEmail) {
+        return userRepository.findByUserEmail(userEmail);
+    }
+
+    public ResponseDto<?> updateUserInfo(String userEmail, UserEntity updatedInfo) {
+        try {
+            // 기존 사용자 정보 불러오기
+            UserEntity currentUser = userRepository.findByUserEmail(userEmail);
+
+            // 사용자 정보가 없으면 오류 반환
+            if (currentUser == null) {
+                return ResponseDto.setFailed("User not found");
+            }
+
+            // 수정된 정보 반영
+            currentUser.setUserNickname(updatedInfo.getUserNickname());
+            currentUser.setUserName(updatedInfo.getUserName());
+            currentUser.setUserAddress(updatedInfo.getUserAddress());
+            currentUser.setUserPhoneNumber(updatedInfo.getUserPhoneNumber());
+            currentUser.setUserProfile(updatedInfo.getUserProfile());
+
+            // 데이터베이스에 저장
+            userRepository.save(currentUser);
+
+            return ResponseDto.setSuccess("User info updated successfully", null);
+
+        } catch (Exception e) {
+            return ResponseDto.setFailed("Database Error");
+        }
+    }
+
 }

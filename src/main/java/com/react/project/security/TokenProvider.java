@@ -43,4 +43,12 @@ public class TokenProvider {
         // 복호화된 토큰의 payload에서 제목을 가져옴
         return claims.getSubject();
     }
+
+    public String getEmailFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(SECURITY_KEY)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
 }

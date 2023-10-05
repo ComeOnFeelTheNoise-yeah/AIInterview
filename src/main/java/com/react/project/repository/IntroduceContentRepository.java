@@ -5,7 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import com.react.project.entity.IntroduceContentEntity;
 
-@Repository
-public interface IntroduceContentRepository extends JpaRepository<IntroduceContentEntity, String> {
+import java.util.Optional;
 
+@Repository
+public interface IntroduceContentRepository extends JpaRepository<IntroduceContentEntity, Long> {
+    Optional<IntroduceContentEntity> findByUserEmail(String userEmail);
 }
+

@@ -10,18 +10,19 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class OpenAIApi {
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "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";
 
     public String ask(String prompt){
         String responeBody = "";
 
         JSONArray messages = new JSONArray();
         messages.put(new JSONObject().put("role", "system").put("content", "You are a helpful assistant."));
-        messages.put(new JSONObject().put("role", "user").put("content", prompt));
+        String combinedPrompt = prompt + "보낸 자소서를 참고해서 질문에 대한 대답해주고 한국어로 대답해줘";
+        messages.put(new JSONObject().put("role", "user").put("content", combinedPrompt));
 
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("messages", messages);
-        jsonBody.put("max_tokens", 150);
+        jsonBody.put("max_tokens", 500);
         jsonBody.put("temperature", 0.8);
         jsonBody.put("model", "gpt-3.5-turbo");
 

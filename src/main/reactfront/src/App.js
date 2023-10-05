@@ -1,7 +1,7 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
-import axios from "axios";
+import React from 'react';
 import MainLayout from "./views/layouts/MainLayout";
+import NewsList from "./components/NewsList";
 
 const App = () => {
 

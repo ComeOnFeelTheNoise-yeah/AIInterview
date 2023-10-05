@@ -99,15 +99,11 @@ export default function ChatBot() {
                             ) : (
                                 <>
                                     <Typography variant="h6" style={{ marginBottom: '20px' }}>불러올 자소서가 없습니다. 자소서를 먼저 작성해주세요.</Typography>
-                                    <Button
-                                        fullWidth
-                                        variant="contained"
-                                        color="secondary"
-                                    >
-                                        <Link to="/infoWrite" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <Link to="/infoWrite" style={{ textDecoration: 'none' }}>
+                                        <Button fullWidth variant="contained" color="secondary">
                                             자소서 작성
-                                        </Link>
-                                    </Button>
+                                        </Button>
+                                    </Link>
                                 </>
                             )}
                         </>

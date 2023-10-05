@@ -39,7 +39,13 @@ const NewsList = () => {
                 const response = await axios.get(
                     'https://newsapi.org/v2/everything?q=취업 OR 구인 OR 구직&language=ko&apiKey=0bacc4212d814944a2ba59ee7cdc2e1b',
                 );
-                setArticles(response.data.articles);
+                const articlesFromResponse = response.data.articles;
+                setArticles(articlesFromResponse);
+
+                // 첫 번째 기사의 이미지를 기본값으로 설정
+                if (articlesFromResponse && articlesFromResponse.length > 0) {
+                    setSelectedImage(articlesFromResponse[0].urlToImage);
+                }
             } catch(e) {
                 console.log(e);
             }
@@ -47,7 +53,6 @@ const NewsList = () => {
         };
         fetchData();
     }, []);
-
     if (loading) {
         return <NewsListBlock>대기 중...</NewsListBlock>
     }

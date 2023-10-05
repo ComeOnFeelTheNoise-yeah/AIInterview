@@ -8,6 +8,7 @@ import Board from "./views/Board";
 import Payment from "./views/Payment";
 import MemberChange from "./views/MemberChange"
 import InfoWrite from "./views/InfoWrite";
+import CompanyIntro from "./views/CompanyIntro";
 
 export default function Routing(){
     return (
@@ -19,6 +20,7 @@ export default function Routing(){
                     <Route path='/interview' element={<Interview />} />
                     <Route path='/analysis' element={<Analysis/>} />
                     <Route path='/board' element={<Board/>} />
+                    <Route path='/company' element={<CompanyIntro />} />
                     <Route path='/payment' element={<Payment/>} />
                     <Route path='/memberInfo' element={<MemberChange/>} />
                     <Route path='/infoWrite' element={<InfoWrite />} />

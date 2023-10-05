@@ -73,9 +73,11 @@ export default function Navigation() {
                             </Link>
                         </Button>
                         <Button variant="text" color="inherit" sx={{ marginRight: '20px' }}>
-                            <Typography variant="h6" fontWeight="bold">
-                                기업별 자소서 항목
-                            </Typography>
+                            <Link to="/company" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <Typography variant="h6" fontWeight="bold">
+                                    기업별 자소서 항목
+                                </Typography>
+                            </Link>
                         </Button>
                         <Button variant="text" color="inherit" sx={{ marginRight: '20px' }}>
                             <Link to="/chatbot" style={{ textDecoration: 'none', color: 'inherit' }}>

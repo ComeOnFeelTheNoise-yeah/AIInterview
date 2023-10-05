@@ -84,3 +84,8 @@
   display: table;
   clear: both;
 }
+
+body {
+  background-color: #f4f4f4;  /* 예시 배경색. 원하는 색상으로 변경 가능 */
+  font-family: 'Arial', sans-serif;  /* 예시 폰트. 원하는 폰트로 변경 가능 */
+}

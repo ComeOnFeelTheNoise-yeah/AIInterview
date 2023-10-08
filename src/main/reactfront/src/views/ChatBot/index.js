@@ -1,6 +1,16 @@
 import React, {useEffect, useState} from "react";
 import ChatWindow from "../../components/ChatWindow";
-import { Button, Container, Typography, Box } from '@mui/material';
+import {
+    Button,
+    Container,
+    Typography,
+    Box,
+    DialogContent,
+    List,
+    ListItem,
+    ListItemText,
+    DialogActions, Dialog, DialogTitle
+} from '@mui/material';
 import {useCookies} from "react-cookie";
 import axios from "axios";
 import {Link} from "react-router-dom";
@@ -11,6 +21,8 @@ export default function ChatBot() {
     const [cookies] = useCookies(['token']);
     const [loadedContent, setLoadedContent] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [openSelectDialog, setOpenSelectDialog] = useState(false);  // 자소서 선택 팝업창 상태
+    const [titlesList, setTitlesList] = useState([]);  // 제목 목록 상태
 
     useEffect(() => {
         const fetchUserEmail = async () => {
@@ -57,6 +69,47 @@ export default function ChatBot() {
         loadIntroduceContent();
     }, [userEmail]);
 
+    useEffect(() => {
+        const fetchTitles = async () => {
+            if (userEmail) {
+                try {
+                    const response = await axios.get(`http://localhost:8080/get-titles?userEmail=${userEmail}`);
+                    setTitlesList(response.data);
+                } catch (error) {
+                    console.error("Error loading titles:", error);
+                }
+            }
+        };
+
+        fetchTitles();
+    }, [userEmail]);
+
+
+    const openTitleDialog = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/get-titles?userEmail=${userEmail}`);
+            setTitlesList(response.data);
+            setOpenSelectDialog(true);
+        } catch (error) {
+            console.error("Error loading titles:", error);
+        }
+    };
+
+    const selectIntroduceContent = async (selectedTitle) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/get-content-by-title?userEmail=${userEmail}&title=${selectedTitle}`);
+            const data = response.data;
+
+            if (data && data.introContent) {
+                setLoadedContent(JSON.parse(data.introContent));
+                setShowChat(true);
+                setOpenSelectDialog(false);  // 팝업창 닫기
+            }
+        } catch (error) {
+            console.error("Error loading introduce content:", error);
+        }
+    };
+
     const loadIntroduceContent = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/get-content?userEmail=${userEmail}`);
@@ -82,7 +135,7 @@ export default function ChatBot() {
                             <Typography variant="h4" style={{ marginBottom: '20px', whiteSpace: 'pre-line' }}>
                                 {"입력한 자소서를 통해 예상 질문의 \n답을 들을 수 있는 챗봇입니다. "}
                             </Typography>
-                            {loadedContent ? (
+                            {titlesList.length >= 1 ? (
                                 <>
                                     <Typography variant="h6" style={{ marginBottom: '20px', whiteSpace: 'pre-line' }}>
                                         {"자소서를 확인하였습니다. \n이제 챗봇을 사용하실 수 있습니다. "}
@@ -91,10 +144,27 @@ export default function ChatBot() {
                                         fullWidth
                                         variant="contained"
                                         color="primary"
-                                        onClick={() => setShowChat(true)}
+                                        onClick={openTitleDialog}
                                     >
                                         챗봇 사용하기
                                     </Button>
+                                    <Dialog open={openSelectDialog} onClose={() => setOpenSelectDialog(false)}>
+                                        <DialogTitle>자소서 선택</DialogTitle>
+                                        <DialogContent>
+                                            <List>
+                                                {titlesList.map((title, index) => (
+                                                    <ListItem button key={index} onClick={() => selectIntroduceContent(title)}>
+                                                        <ListItemText primary={title} />
+                                                    </ListItem>
+                                                ))}
+                                            </List>
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={() => setOpenSelectDialog(false)} color="primary">
+                                                취소
+                                            </Button>
+                                        </DialogActions>
+                                    </Dialog>
                                 </>
                             ) : (
                                 <>

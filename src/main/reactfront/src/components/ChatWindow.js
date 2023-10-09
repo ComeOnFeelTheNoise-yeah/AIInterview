@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
@@ -14,6 +14,16 @@ const ChatWindow = ({ introContent }) => {
     const [cookies] = useCookies();
     const {user} = useUserStore();
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const messagesEndRef = useRef(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+
+    useEffect(() => {
+        scrollToBottom();  // 새 메시지가 추가될 때마다 스크롤을 맨 아래로 이동
+    }, [messages]);
 
     const getProject = async (token) => {
         const requestOption = {
@@ -65,27 +75,29 @@ const ChatWindow = ({ introContent }) => {
 
     const handleSubmit = async (message) => {
         addMessage(message, true);
+        setIsLoading(true);  // 메시지를 보낼 때 로딩 상태를 true로 설정
 
-        try{
-            // 백엔드 서버와 통신하여 GPT의 응답을 받음
+        try {
             const response = await axios.post("http://localhost:8080/ask", { prompt: message }, {
                 headers: {
-                    'Authorization': 'Bearer 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',
+                    'Authorization': 'Bearer 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',
                 }
             });
 
-            // GPT로부터 받은 응답을 채팅창에 추가함
-            if(response.data){
+            setIsLoading(false);  // 응답을 받았을 때 로딩 상태를 false로 설정
+
+            if (response.data) {
                 addMessage(response.data, false);
             }
-        }catch(error){
+        } catch (error) {
             console.error("Error fetching GPT response: ", error);
+            setIsLoading(false);  // 에러가 발생했을 때 로딩 상태를 false로 설정
         }
     };
 
     return (
         <div className="chat-window">
-            {isLoaded ? ( // 채팅 화면의 표시 여부를 결정
+            {isLoaded ? (
                 <>
                     <div className="chat-messages">
                         {messages.map((message, index) => (
@@ -95,11 +107,13 @@ const ChatWindow = ({ introContent }) => {
                                 isUser={message.isUser}
                             />
                         ))}
+                        {isLoading && <ChatMessage message="대답 생성중..." isUser={false} />}
+                        <div ref={messagesEndRef} />  {/* 이 요소는 화면에 보이지 않지만 스크롤을 제어하는데 사용됩니다. */}
                     </div>
-                    <ChatInput onSubmit={handleSubmit}/>
+                    <ChatInput onSubmit={handleSubmit} />
                 </>
             ) : (
-                <p>챗봇 불러오는중...</p> // 로딩 중일 때의 메시지
+                <p>챗봇 불러오는중...</p>
             )}
         </div>
     );

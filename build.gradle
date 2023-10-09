@@ -19,6 +19,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -39,7 +40,12 @@ dependencies {
 	implementation 'com.opencsv:opencsv:5.5.2'
 	implementation 'software.amazon.awssdk:s3:2.20.158'
 	implementation 'software.amazon.awssdk:auth:2.20.158'
-
+	implementation 'net.sf.py4j:py4j:0.10.9.2'
+	implementation 'com.github.shin285:KOMORAN:3.3.4'
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+	implementation 'org.apache.lucene:lucene-core:8.10.0'
+	implementation 'org.apache.lucene:lucene-analyzers-common:8.10.0'
+	implementation 'org.apache.lucene:lucene-queryparser:8.10.0'
 
 }
 

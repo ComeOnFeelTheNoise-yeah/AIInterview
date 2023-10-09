@@ -10,7 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class OpenAIApi {
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "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";
 
     public String ask(String prompt){
         String responeBody = "";
@@ -22,7 +22,7 @@ public class OpenAIApi {
 
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("messages", messages);
-        jsonBody.put("max_tokens", 500);
+        jsonBody.put("max_tokens", 1000);
         jsonBody.put("temperature", 0.8);
         jsonBody.put("model", "gpt-3.5-turbo");
 
@@ -44,6 +44,39 @@ public class OpenAIApi {
 
         return responeBody;
     }
+
+    public String askAnalysis(String prompt){
+        String responeBody = "";
+
+        JSONArray messages = new JSONArray();
+        messages.put(new JSONObject().put("role", "system").put("content", "You are a helpful assistant."));
+        messages.put(new JSONObject().put("role", "user").put("content", prompt));
+
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("messages", messages);
+        jsonBody.put("max_tokens", 500);
+        jsonBody.put("temperature", 0.8);
+        jsonBody.put("model", "gpt-4");
+
+        try{
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.openai.com/v1/chat/completions"))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + API_KEY)
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody.toString()))
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            responeBody = extractAnswer(response.body());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return responeBody;
+    }
+
 
     private String extractAnswer(String responseJson){
         JSONObject jsonObject = new JSONObject(responseJson);

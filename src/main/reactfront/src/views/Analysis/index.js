@@ -224,7 +224,10 @@ function Analysis() {
                 type: 'category'
             },
             y: {
-                type: 'linear'
+                type: 'linear',
+                ticks: {
+                    stepSize: 20
+                }
             }
         },
         maintainAspectRatio: false

@@ -3,6 +3,7 @@ package com.react.project.controller;
 import com.react.project.AnalysisResult;
 import com.react.project.service.AnalysisService;
 import com.react.project.service.AuthService;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -30,6 +32,12 @@ public class AnalysisController {
         Map<String, String> response = new HashMap<>();
         response.put("corrected_text", correctedText);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/api/analyzeKeywords")
+    public ResponseEntity<List<JSONObject>> analyzeKeywords(@RequestBody String content) {
+        List<JSONObject> results = analysisService.analyzeKeywords(content);
+        return ResponseEntity.ok(results);
     }
 
 }

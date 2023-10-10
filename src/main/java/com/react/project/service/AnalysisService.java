@@ -3,6 +3,7 @@ package com.react.project.service;
 import com.react.project.AnalysisResult;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
+import kr.co.shineware.nlp.komoran.model.KomoranResult;
 import kr.co.shineware.util.common.model.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -44,10 +45,12 @@ public class AnalysisService {
     }
     private final Komoran komoran;
     private List<String> storedTexts;
+    private List<JSONObject> keywordDataList;
 
     public AnalysisService() throws Exception {
         this.komoran = new Komoran(DEFAULT_MODEL.FULL);
         this.storedTexts = loadStoredTexts();
+        this.keywordDataList = loadKeywordData();
     }
 
     public AnalysisResult analyze(String content) {
@@ -68,7 +71,6 @@ public class AnalysisService {
             correctedTexts.add(checkSpellingWithGPT(text));
         }
         result.setCorrectedTexts(correctedTexts);
-
 
         return result;
     }
@@ -182,6 +184,81 @@ public class AnalysisService {
         String correctedText = openai.askAnalysis(prompt);
 
         return correctedText;
+    }
+
+    private List<JSONObject> loadKeywordData() throws Exception {
+        JSONParser parser = new JSONParser();
+        List<JSONObject> keywordDataList = new ArrayList<>();
+
+        // 각 키워드 파일의 이름을 명시적으로 지정
+        String[] fileNames = {
+                "global.json",
+                "active.json",
+                "challenge.json",
+                "sincerity.json",
+                "communication.json",
+                "patience.json",
+                "honesty.json",
+                "responsibility.json",
+                "creative.json",
+                "teamwork.json",
+        };
+
+        for (String fileName : fileNames) {
+            FileReader reader = new FileReader(ResourceUtils.getFile("classpath:" + fileName));
+            Object parsedObj = parser.parse(reader);
+            if (parsedObj instanceof JSONArray) {
+                JSONArray jsonArray = (JSONArray) parsedObj;
+                for (Object obj : jsonArray) {
+                    if (obj instanceof JSONArray) {
+                        JSONArray keywordArray = (JSONArray) obj;
+                        String keywordName = (String) keywordArray.get(0);
+                        JSONArray keywords = (JSONArray) keywordArray.get(1);
+                        JSONObject keywordData = new JSONObject();
+                        keywordData.put(keywordName, keywords);
+                        keywordDataList.add(keywordData);
+                    } else {
+                        System.err.println("Expected JSONArray but found " + obj.getClass().getName());
+                    }
+                }
+            } else {
+                System.err.println("Expected JSONArray but found " + parsedObj.getClass().getName());
+            }
+        }
+        return keywordDataList;
+    }
+
+
+
+    public List<JSONObject> analyzeKeywords(String content) {
+        List<JSONObject> results = new ArrayList<>();
+        for (JSONObject keywordData : keywordDataList) {
+            JSONObject result = new JSONObject();
+            KomoranResult komoranResult = komoran.analyze(content);
+            List<Pair<String, String>> singleResult = komoranResult.getList();
+            List<List<Pair<String, String>>> analyzedResult = new ArrayList<>();
+            analyzedResult.add(singleResult);
+
+            for (List<Pair<String, String>> wordList : analyzedResult) {
+                for (Pair<String, String> word : wordList) {
+                    String term = word.getFirst();
+                    for (Object key : keywordData.keySet()) {
+                        JSONArray keywords = (JSONArray) keywordData.get(key);
+                        if (keywords.contains(term)) {
+                            if (result.containsKey(key)) {
+                                result.put(key, (int) result.get(key) + 1);
+                            } else {
+                                result.put(key, 1);
+                            }
+                        }
+                    }
+                }
+            }
+            if (!result.isEmpty()) {
+                results.add(result);
+            }
+        }
+        return results;
     }
 
 }

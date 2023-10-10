@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import {
     Button,
@@ -16,7 +16,12 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import {useCookies} from "react-cookie";
+import { useCookies } from "react-cookie";
+import { Bar } from 'react-chartjs-2';
+import 'chartjs-adapter-date-fns';
+import { BarController, BarElement, CategoryScale, LinearScale, Chart } from 'chart.js';
+
+Chart.register(BarController, BarElement, CategoryScale, LinearScale);
 
 function Analysis() {
     const [view, setView] = useState('start');
@@ -29,6 +34,52 @@ function Analysis() {
     const [cookies] = useCookies(['token']);
     const [loading, setLoading] = useState(false);
     const [spellingCheckResult, setSpellingCheckResult] = useState([]);
+    const chartRef = useRef(null);
+    const [chartInstance, setChartInstance] = useState(null);
+
+    const initialChartData = {
+        labels: [],
+        datasets: []
+    };
+
+    const [chartData, setChartData] = useState(initialChartData);
+
+    const analysisResults = {
+        글로벌역량: 75,
+        능동: 85,
+        도전: 65,
+        성실: 90,
+        소통: 70,
+        인내심: 60,
+        정직: 80,
+        주인의식: 85,
+        창의: 70,
+        팀워크: 90
+    };
+
+    useEffect(() => {
+        const updatedChartData = {
+            labels: Object.keys(analysisResults),
+            datasets: [
+                {
+                    label: '성향 분석 결과',
+                    data: Object.values(analysisResults),
+                    backgroundColor: 'rgba(75,192,192,0.6)',
+                    borderColor: 'rgba(75,192,192,1)',
+                    borderWidth: 1,
+                    hoverBackgroundColor: 'rgba(75,192,192,0.4)',
+                    hoverBorderColor: 'rgba(75,192,192,1)'
+                }
+            ]
+        };
+        setChartData(updatedChartData);
+    }, [analysisResults]);
+
+    useEffect(() => {
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+    }, [chartData]);
 
     useEffect(() => {
         const fetchUserEmail = async () => {
@@ -48,6 +99,12 @@ function Analysis() {
         };
         fetchUserEmail();
     }, [cookies.token]);
+
+    useEffect(() => {
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+    }, [chartData]);
 
     const handleStartAnalysis = () => {
         setView('write');
@@ -72,6 +129,28 @@ function Analysis() {
                     correctedTextAccumulator.push("Error: Could not fetch corrected text");
                 }
             }
+
+            // 키워드 분석 API 호출
+            const keywordAnalysisResponse = await axios.post('/api/analyzeKeywords', { content: combinedText });
+            const keywordAnalysisResults = keywordAnalysisResponse.data;
+
+            // API 응답을 그래프 데이터로 변환
+            const labels = keywordAnalysisResults.map(result => Object.keys(result)[0]);
+            const data = keywordAnalysisResults.map(result => Object.values(result)[0]);
+
+            setChartData({
+                labels: labels,
+                datasets: [{
+                    label: '키워드 분석 결과',
+                    data: data,
+                    backgroundColor: 'rgba(75,192,192,0.6)',
+                    borderColor: 'rgba(75,192,192,1)',
+                    borderWidth: 1,
+                    hoverBackgroundColor: 'rgba(75,192,192,0.4)',
+                    hoverBorderColor: 'rgba(75,192,192,1)'
+                }]
+            });
+
 
             setSpellingCheckResult(correctedTextAccumulator);
             setView('result');
@@ -139,6 +218,18 @@ function Analysis() {
         }
     };
 
+    const chartOptions = {
+        scales: {
+            x: {
+                type: 'category'
+            },
+            y: {
+                type: 'linear'
+            }
+        },
+        maintainAspectRatio: false
+    };
+
     return (
         <Container maxWidth="md" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '40px' }}>
             {view === 'start' && (
@@ -168,6 +259,7 @@ function Analysis() {
                             ))}
                         </List>
                     </Dialog>
+
                     {questions.map((question, index) => (
                         <Box key={index} mt={2} width="100%">
                             <TextField
@@ -189,6 +281,7 @@ function Analysis() {
                             />
                         </Box>
                     ))}
+
                     <Box mt={2} display="flex" justifyContent="center">
                         <IconButton onClick={addField} disabled={questions.length >= 5}>
                             <AddIcon />
@@ -197,11 +290,13 @@ function Analysis() {
                             <RemoveIcon />
                         </IconButton>
                     </Box>
+
                     <Box mt={2} display="flex" justifyContent="center">
                         <Button variant="contained" color="secondary" onClick={handleReset}>
                             초기화
                         </Button>
                     </Box>
+
                     <Box mt={3} mb={5} width="100%" display="flex" justifyContent="center">
                         <Button variant="contained" color="primary" onClick={handleCheck}>
                             결과 확인
@@ -224,6 +319,21 @@ function Analysis() {
                                 <Typography variant="body1">{result}</Typography>
                             </Box>
                         ))}
+                    </Box>
+
+                    <Box mt={3} width="100%">
+                        <Bar
+                            ref={chartRef}
+                            data={chartData}  // 이 부분을 수정하여 chartData를 사용
+                            options={chartOptions}
+                            height={400}
+                            onElementsClick={(elements) => {
+                                if (elements.length > 0) {
+                                    const chart = chartRef.current.chartInstance;
+                                    setChartInstance(chart);
+                                }
+                            }}
+                        />
                     </Box>
                 </>
             )}

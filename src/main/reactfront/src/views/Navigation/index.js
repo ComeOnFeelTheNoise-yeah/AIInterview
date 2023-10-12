@@ -54,6 +54,13 @@ export default function Navigation() {
         setAnchorEl(null);
     };
 
+    const premiumOnlyHandler = (event) => {
+        if (remainingDays <= 0) {
+            event.preventDefault(); // 기본 이벤트를 중지
+            alert('프리미엄 전용 메뉴입니다');
+        }
+    };
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="fixed" sx={{ backgroundColor: '#ffffff', color: 'black' }}>
@@ -71,14 +78,22 @@ export default function Navigation() {
                     </IconButton>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         <Button variant="text" color="inherit" sx={{ marginRight: '20px' }}>
-                            <Link to="/interview" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <Link
+                                to="/interview"
+                                style={{ textDecoration: 'none', color: 'inherit' }}
+                                onClick={premiumOnlyHandler} // 클릭 핸들러 추가
+                            >
                                 <Typography variant="h6" fontWeight="bold">
                                     모의면접
                                 </Typography>
                             </Link>
                         </Button>
                         <Button variant="text" color="inherit" sx={{ marginRight: '20px' }}>
-                            <Link to="/analysis" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <Link
+                                to="/analysis"
+                                style={{ textDecoration: 'none', color: 'inherit' }}
+                                onClick={premiumOnlyHandler} // 클릭 핸들러 추가
+                            >
                                 <Typography variant="h6" fontWeight="bold">
                                     자소서 분석
                                 </Typography>
@@ -99,7 +114,11 @@ export default function Navigation() {
                             </Link>
                         </Button>
                         <Button variant="text" color="inherit" sx={{ marginRight: '20px' }}>
-                            <Link to="/chatbot" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <Link
+                                to="/chatbot"
+                                style={{ textDecoration: 'none', color: 'inherit' }}
+                                onClick={premiumOnlyHandler} // 클릭 핸들러 추가
+                            >
                                 <Typography variant="h6" fontWeight="bold">
                                     예시 대답 챗봇
                                 </Typography>

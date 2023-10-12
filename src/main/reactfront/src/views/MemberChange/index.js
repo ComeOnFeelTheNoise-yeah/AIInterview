@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Button, TextField, Typography, Avatar, Container } from '@mui/material';
-import {useCookies} from "react-cookie";
+import { useCookies } from "react-cookie";
 
 export default function MemberChange() {
     const [isVerified, setIsVerified] = useState(false);
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [cookies] = useCookies(['token']);
-    const [userProfile, setUserProfile] = useState(null); // 프로필 이미지 상태
+    const [userProfile, setUserProfile] = useState(null);
 
     const [user, setUser] = useState({
         userEmail: '',
@@ -18,7 +18,6 @@ export default function MemberChange() {
         userAddress: ''
     });
 
-    // 유효성 검사 상태 추가
     const [validationErrors, setValidationErrors] = useState({});
     const [isNicknameValid, setIsNicknameValid] = useState(null);
     const [isNicknameChecked, setIsNicknameChecked] = useState(false);
@@ -57,18 +56,15 @@ export default function MemberChange() {
     const validateForm = () => {
         let errors = {};
 
-        // 이름 유효성 검사
         const namePattern = /^[가-힣]{2,4}$/;
         if (!namePattern.test(user.userName)) {
             errors.userName = "이름이 올바르지 않습니다.";
         }
 
-        // 닉네임 유효성 검사
         if (!user.userNickname) {
             errors.userNickname = "닉네임을 입력해주세요.";
         }
 
-        // 휴대폰 번호 유효성 검사
         const phonePattern = /^[0-9]{10,11}$/;
         if (!phonePattern.test(user.userPhoneNumber)) {
             errors.userPhoneNumber = "올바른 휴대폰 번호를 입력해주세요.";
@@ -88,25 +84,21 @@ export default function MemberChange() {
             alert('사용 가능한 닉네임입니다.');
             setIsNicknameValid(true);
         }
-    }
+    };
 
     const handlePasswordVerification = async () => {
         try {
-            const token = cookies.token;  // 쿠키에서 토큰 가져오기
-
+            const token = cookies.token;
             if (!token) {
                 setErrorMessage('Token not found. Please log in again.');
                 return;
             }
-
             const response = await axios.post('/api/auth/verifyPassword', { password, token });
-
             if (response.data.isValid) {
                 setIsVerified(true);
-
                 const userDetails = await axios.get('/api/auth/currentUser', {
                     headers: {
-                        Authorization: `Bearer ${token}` // 현재 사용자의 정보를 가져오기 위해 헤더에 토큰 추가
+                        Authorization: `Bearer ${token}`
                     }
                 });
                 setUser(userDetails.data);
@@ -120,31 +112,34 @@ export default function MemberChange() {
 
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
+            let selectedFile = e.target.files[0];
             let reader = new FileReader();
             reader.onload = (event) => {
                 setUserProfile(event.target.result);
             }
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(selectedFile);
         }
     };
 
-    const uploadProfileImage = async (image) => {
+    const uploadProfileImageToServer = async (imageFile) => {
         const formData = new FormData();
-        formData.append('image', image);
-        console.log("Uploading image:", image);
-        for (let pair of formData.entries()) {
-            console.log("image:", image);
-            console.log(pair[0]+ ', ' + pair[1]);
-        }
+        formData.append('profileImage', imageFile);
 
         try {
-            const response = await axios.post('/api/upload/uploadProfileImage', formData);
-            console.log("Server response:", response.data);
-            return response.data.imageUrl;
+            const response = await axios.post('/api/uploadProfileImage', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            if (response.data && response.data.imageUrl) {
+                return response.data.imageUrl;
+            }
+            console.error("Error from server:", response.data);
         } catch (error) {
-            console.error("Error uploading the image:", error);
+            console.error("Error uploading the image:", error.response.data);
         }
-    }
+    };
+
 
 
     const handleUpdate = async () => {
@@ -157,29 +152,26 @@ export default function MemberChange() {
         let updatedUser = { ...user };
 
         if (userProfile) {
-            const imageUrl = await uploadProfileImage(userProfile);
-            console.log("profile image:", imageUrl);
+            console.error("userProfile:", userProfile);
+            const imageUrl = await uploadProfileImageToServer(userProfile);
+            console.error("imageUrl:", imageUrl);
             if (imageUrl) {
                 updatedUser.userProfile = imageUrl;
-                console.log("profile image:", updatedUser.userProfile);
             }
         }
-        console.log("Sending profile image:", updatedUser.userProfile);
 
         try {
-            // 토큰을 이용하여 인증
             const token = cookies.token;
-
-            const response = await axios.post('/api/auth/updateUserInfo', user, {
+            const response = await axios.post('/api/auth/updateUserInfo', updatedUser, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
 
             if (response.data.status === "success") {
-                alert("사용자 정보가 성공적으로 수정되었습니다.1");
+                alert("사용자 정보가 성공적으로 수정되었습니다.");
             } else {
-                alert("사용자 정보가 성공적으로 수정되었습니다.2");
+                alert("사용자 정보 수정 중 오류가 발생했습니다.");
             }
         } catch (error) {
             console.error("Error updating user info:", error);
@@ -219,7 +211,7 @@ export default function MemberChange() {
 
     return (
         <Container maxWidth="xs" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-            <Avatar src={userProfile || user.userProfile} style={{ width: 100, height: 100, marginBottom: 20 }} />
+            <Avatar className="user-avatar" src={userProfile || user.userProfile} style={{ width: 100, height: 100, marginBottom: 20 }} />
             <input accept="image/*" style={{ display: 'none' }} id="icon-button-file" type="file" onChange={handleImageChange} />
             <label htmlFor="icon-button-file">
                 <Button variant="contained" component="span">프로필 사진 변경</Button>
@@ -277,11 +269,11 @@ export default function MemberChange() {
                         fullWidth
                         label="주소"
                         variant="standard"
-                        value={user.userAddress}  // value 설정
+                        value={user.userAddress}
                         error={!!validationErrors.userAddress}
                         helperText={validationErrors.userAddress}
                         style={{ flex: 1 }}
-                        onChange={(e) => setUser(prev => ({ ...prev, userAddress: e.target.value }))}  // onChange 설정
+                        onChange={(e) => setUser(prev => ({ ...prev, userAddress: e.target.value }))}
                     />
                     <Button variant="contained" onClick={searchAddress} style={{ marginLeft: 10 }}>
                         검색

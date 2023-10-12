@@ -8,19 +8,38 @@ import IconButton from '@mui/material/IconButton';
 import {useUserStore} from "../../stores";
 import { Link } from 'react-router-dom';
 import {useCookies} from "react-cookie";
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Avatar from '@mui/material/Avatar';
+import { useRemainingDays } from "../../useRemainingDays";
+import {Chip} from "@mui/material";
 
 export default function Navigation() {
     const [cookies, setCookies] = useCookies(['token']);
     const {user, removeUser} = useUserStore();
     const [userProfile, setUserProfile] = useState(user ? user.userProfile : "path-to-default-image.jpg");
     const [userNickname, setUserNickname] = useState(user ? user.userNickname : "");
+    const { remainingDays, endDate, updateRemainingDays } = useRemainingDays();
 
     const [anchorEl, setAnchorEl] = useState(null);
     const profileBtnRef = useRef(null);
+
+    const updateChipStatus = () => {
+        updateRemainingDays();
+    };
+
+    useEffect(() => {
+        const handlePaymentSuccess = () => {
+            updateChipStatus(); // 상태 업데이트 함수 호출
+        };
+
+        document.addEventListener('paymentSuccess', handlePaymentSuccess); // 이벤트 리스너 등록
+
+        return () => {
+            document.removeEventListener('paymentSuccess', handlePaymentSuccess); // 컴포넌트 언마운트 시 리스너 제거
+        };
+    }, [updateChipStatus]);
 
     const logOutHandler = () => {
         setCookies('token', '', {expires: new Date()});
@@ -96,6 +115,11 @@ export default function Navigation() {
                     </Typography>
                     {user ? (
                         <>
+                            {remainingDays > 0 ?
+                                <Chip label="프리미엄" color="primary" sx={{ marginRight: '10px' }} />
+                                :
+                                <Chip label="일반회원" color="success" sx={{ marginRight: '10px' }} />
+                            }
                             <Typography variant="h6" sx={{ marginRight: '10px' }}>
                                 {userNickname}
                             </Typography>

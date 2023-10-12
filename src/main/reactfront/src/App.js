@@ -6,7 +6,7 @@ import Payment from "./views/Payment";
 const App = () => {
 
   return (
-    <Payment/>
+    <MainLayout/>
   )
 } 
 

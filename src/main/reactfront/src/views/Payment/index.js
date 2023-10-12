@@ -2,8 +2,59 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import BootPay from "bootpay-js";
 import {Button} from "@mui/material";
+import {useCookies} from "react-cookie";
+import { useNavigate } from 'react-router-dom';
 
 export default function Payment(){
+    const [userEmail, setUserEmail] = useState('');
+    const [cookies] = useCookies(['token']);
+    const [remainingDays, setRemainingDays] = useState(0);
+    const [endDate, setEndDate] = useState(new Date());
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchUserEmail = async () => {
+            const token = cookies.token;
+
+            if (token) {
+                try {
+                    const userDetails = await axios.get('/api/auth/currentUser', {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    const fetchedUserEmail = userDetails.data.userEmail;
+                    setUserEmail(fetchedUserEmail);
+
+                    updateRemainingDays(fetchedUserEmail);
+                } catch (error) {
+                    console.error("Error fetching user email:", error);
+                    setLoading(false);
+                }
+            } else {
+                setLoading(false);
+            }
+        };
+        fetchUserEmail();
+    }, [cookies.token]);
+
+    const updateRemainingDays = (email) => {
+        setLoading(true);
+        axios.get(`/api/get-days?userEmail=${email}`)
+            .then(response => {
+                setRemainingDays(response.data);
+
+                const end = new Date();
+                end.setDate(end.getDate() + response.data);
+                setEndDate(end);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error("Error fetching remaining days:", error);
+                setLoading(false);
+            });
+    };
 
     const onPayment = (duration) => {
         const productName = `프리미엄 ${duration}일 이용권`;
@@ -54,16 +105,38 @@ export default function Payment(){
             // 결제창이 닫힐때 수행됩니다. (성공,실패,취소에 상관없이 모두 수행됨)
             console.log(data);
         }).done(function (data) {
-            alert("결제가 완료되었습니다")
+            alert("결제가 완료되었습니다");
+            document.dispatchEvent(new Event('paymentSuccess'));
             console.log(data);
+
+            axios.post('/api/save-payment', {
+                userEmail: userEmail,
+                days: duration
+            })
+                .then(response => {
+                    console.log("Payment data saved:", response.data);
+                    updateRemainingDays();
+                    navigate('/');
+                })
+                .catch(error => {
+                    console.error("Error saving payment data:", error);
+                });
         });
     };
 
     return (
         <div>
-            <Button variant="contained" color="primary" onClick={() => onPayment(30)}>30일 결제</Button>
-            <Button variant="contained" color="primary" onClick={() => onPayment(90)}>90일 결제</Button>
-            <Button variant="contained" color="primary" onClick={() => onPayment(180)}>180일 결제</Button>
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                <>
+                    <h1>남은 이용일수: {remainingDays}일</h1>
+                    <h2>{remainingDays > 0 ? `이용 만료 예정일: ${endDate.toLocaleDateString()}` : "이용권이 없습니다"}</h2>
+                    <Button variant="contained" color="primary" onClick={() => onPayment(30)}>30일 결제</Button>
+                    <Button variant="contained" color="primary" onClick={() => onPayment(90)}>90일 결제</Button>
+                    <Button variant="contained" color="primary" onClick={() => onPayment(180)}>180일 결제</Button>
+                </>
+            )}
         </div>
     );
 }

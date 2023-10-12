@@ -4,6 +4,7 @@ import BootPay from "bootpay-js";
 import {Button} from "@mui/material";
 import {useCookies} from "react-cookie";
 import { useNavigate } from 'react-router-dom';
+import {PricingTable, PricingSlot, PricingDetail} from "react-pricing-table";
 
 export default function Payment(){
     const [userEmail, setUserEmail] = useState('');
@@ -124,17 +125,78 @@ export default function Payment(){
         });
     };
 
+    const pricingData = [
+        {
+            title: "빠른 면접 대응",
+            price: "₩30,000",
+            details: [
+                "✅ 30일 이용권",
+            ],
+            duration: 30
+        },
+        {
+            title: "합리적 면접 준비",
+            price: "₩77,700",
+            details: [
+                "✅ 90일 이용권",
+            ],
+            duration: 90
+        },
+        {
+            title: "완벽 대비",
+            price: "₩150,000",
+            details: [
+                "✅ 180일 이용권",
+            ],
+            duration: 180
+        },
+    ];
+
+
     return (
         <div>
             {loading ? (
                 <p>Loading...</p>
             ) : (
                 <>
-                    <h1>남은 이용일수: {remainingDays}일</h1>
-                    <h2>{remainingDays > 0 ? `이용 만료 예정일: ${endDate.toLocaleDateString()}` : "이용권이 없습니다"}</h2>
-                    <Button variant="contained" color="primary" onClick={() => onPayment(30)}>30일 결제</Button>
-                    <Button variant="contained" color="primary" onClick={() => onPayment(90)}>90일 결제</Button>
-                    <Button variant="contained" color="primary" onClick={() => onPayment(180)}>180일 결제</Button>
+                    <div style={{backgroundImage:"url(/img/img/paymentBGImage.png)",
+                        backgroundPosition: 'center',
+                        backgroundSize: 'cover',
+                        backgroundRepeat: 'no-repeat',
+                        width: '100vw',
+                        height: '100vh'}}>
+                        <p align="center">
+                            <br/><br/><br/>
+                            <h2 style={{color:"#ffffff"}}> 당신과 함께, May The 4th는 성장 합니다 </h2>
+                            <h4 style={{color:"#ffffff", marginTop:"-6px",marginBottom:"-2px"}}> 더 나은 정보 제공과 사용자의 만족을 위해 </h4>
+                            <h4 style={{color:"#ffffff", marginTop:"-2px"}}> Be With You 프리미엄 서비스가 시작되었습니다. </h4>
+                            <h5 style={{color:"#1c1c1c", marginBottom:"-2px"}}> 남은 이용일 수 : {remainingDays}일 </h5>
+                            <h5 style={{color:"#1c1c1c", marginTop:"-2px"}}>{remainingDays > 0 ? `이용 만료 예정일: ${endDate.toLocaleDateString()}` : "이용권이 없습니다"}</h5>
+                            <h5 style={{color:"#1c1c1c", marginTop:"-3px"}}> 프리미엄 서비스 이용시 누릴 수 있는 혜택 :
+                                실시간 오늘의 뉴스,
+                                특별한 자소서 분석,
+                                Community 활동,
+                                기업별 자소서 항목,
+                                면접 예상대답 챗봇</h5>
+                            <br/>
+                        </p>
+                        <PricingTable highlightColor="#1976D2">
+                            {pricingData.map((item, index) => (
+                                <PricingSlot
+                                    key={index}
+                                    buttonText=" 프리미엄 서비스 시작 "
+                                    title={item.title}
+                                    priceText={item.price}
+                                    onClick={() => onPayment(item.duration)} // 추가된 코드
+                                >
+                                    {item.details.map((detail, i) => (
+                                        <PricingDetail key={i}>{detail}</PricingDetail>
+                                    ))}
+                                </PricingSlot>
+                            ))}
+                        </PricingTable>
+                    </div>
+
                 </>
             )}
         </div>

@@ -24,7 +24,7 @@ const Title = styled.h1`
     font-size: 2.5rem;
     margin-bottom: 2rem;
     font-weight: bold;
-    color: #333;
+    color: #999aae;
 `;
 
 const NewsList = () => {
@@ -41,11 +41,6 @@ const NewsList = () => {
                 );
                 const articlesFromResponse = response.data.articles;
                 setArticles(articlesFromResponse);
-
-                // 첫 번째 기사의 이미지를 기본값으로 설정
-                if (articlesFromResponse && articlesFromResponse.length > 0) {
-                    setSelectedImage(articlesFromResponse[0].urlToImage);
-                }
             } catch(e) {
                 console.log(e);
             }
@@ -70,8 +65,21 @@ const NewsList = () => {
                 ))}
             </div>
             <div>
-                <img src={selectedImage} alt="Selected Thumbnail" style={{width: '460px', height: '410px', marginTop: '80px'}} />
+                {selectedImage ? (
+                    <img
+                        src={selectedImage}
+                        alt="Selected Thumbnail"
+                        style={{width: '460px', height: '410px', marginTop: '80px'}}
+                    />
+                ) : (
+                    <img
+                        src="/img/img/TodayNews.png" // 기본 이미지 경로를 지정해주세요.
+                        alt="Default Thumbnail"
+                        style={{width: '460px', height: '410px', marginTop: '80px'}}
+                    />
+                )}
             </div>
+
         </NewsListBlock>
     );
 };

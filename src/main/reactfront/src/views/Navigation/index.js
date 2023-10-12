@@ -92,7 +92,7 @@ export default function Navigation() {
                         edge="start"
                         color="inherit"
                         aria-label="menu"
-                        sx={{ mr: 2 }}
+                        sx={{ mr: 29 }}
                     >
                         <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
                             <img alt="4thLogo" src="/img/img/4thLogo.png" height='60' style={{margin: '0px 10px 0px 0px'}}/>

@@ -14,10 +14,11 @@ import MenuItem from '@mui/material/MenuItem';
 import Avatar from '@mui/material/Avatar';
 import { useRemainingDays } from "../../useRemainingDays";
 import {Chip} from "@mui/material";
+import axios from "axios";
 
 export default function Navigation() {
     const [cookies, setCookies] = useCookies(['token']);
-    const {user, removeUser} = useUserStore();
+    const { user, setUser, removeUser } = useUserStore();
     const [userProfile, setUserProfile] = useState(user ? user.userProfile : "path-to-default-image.jpg");
     const [userNickname, setUserNickname] = useState(user ? user.userNickname : "");
     const { remainingDays, endDate, updateRemainingDays } = useRemainingDays();
@@ -60,6 +61,27 @@ export default function Navigation() {
             alert('프리미엄 전용 메뉴입니다');
         }
     };
+
+    useEffect(() => {
+        if (cookies.token) {
+            axios.get('/api/auth/currentUser', {
+                headers: {
+                    Authorization: `Bearer ${cookies.token}`
+                }
+            })
+                .then(response => {
+                    const fetchedUser = response.data;
+                    // 사용자 정보를 상태에 저장
+                    setUser(fetchedUser);
+
+                    setUserProfile(fetchedUser.userProfile || "path-to-default-image.jpg");
+                    setUserNickname(fetchedUser.userNickname || "");
+                })
+                .catch(error => {
+                    console.error("Error fetching user data:", error);
+                });
+        }
+    }, []);
 
     return (
         <Box sx={{ flexGrow: 1 }}>

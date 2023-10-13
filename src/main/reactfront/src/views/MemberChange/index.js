@@ -9,6 +9,7 @@ export default function MemberChange() {
     const [errorMessage, setErrorMessage] = useState('');
     const [cookies] = useCookies(['token']);
     const [userProfile, setUserProfile] = useState(null);
+    const [userProfilePreview, setUserProfilePreview] = useState(null);
 
     const [user, setUser] = useState({
         userEmail: '',
@@ -113,13 +114,19 @@ export default function MemberChange() {
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             let selectedFile = e.target.files[0];
+
+            // 파일 객체를 userProfile 상태에 저장
+            setUserProfile(selectedFile);
+
+            // 이미지 프리뷰를 위해 FileReader를 사용
             let reader = new FileReader();
             reader.onload = (event) => {
-                setUserProfile(event.target.result);
+                setUserProfilePreview(event.target.result);
             }
             reader.readAsDataURL(selectedFile);
         }
     };
+
 
     const uploadProfileImageToServer = async (imageFile) => {
         const formData = new FormData();
@@ -167,8 +174,9 @@ export default function MemberChange() {
                     'Authorization': `Bearer ${token}`
                 }
             });
+            console.log(response.data);
 
-            if (response.data.status === "success") {
+            if (response.data.result) {
                 alert("사용자 정보가 성공적으로 수정되었습니다.");
             } else {
                 alert("사용자 정보 수정 중 오류가 발생했습니다.");
@@ -211,7 +219,7 @@ export default function MemberChange() {
 
     return (
         <Container maxWidth="xs" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-            <Avatar className="user-avatar" src={userProfile || user.userProfile} style={{ width: 100, height: 100, marginBottom: 20 }} />
+            <Avatar className="user-avatar" src={userProfilePreview || user.userProfile} style={{ width: 100, height: 100, marginBottom: 20 }} />
             <input accept="image/*" style={{ display: 'none' }} id="icon-button-file" type="file" onChange={handleImageChange} />
             <label htmlFor="icon-button-file">
                 <Button variant="contained" component="span">프로필 사진 변경</Button>

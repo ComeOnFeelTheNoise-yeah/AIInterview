@@ -21,6 +21,8 @@ import { Bar } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
 import { BarController, BarElement, CategoryScale, LinearScale, Chart } from 'chart.js';
 import { Paper } from '@mui/material';
+import Loading from "../../components/Loading";
+import analysisImage from '../../assets/images/analysis.gif';
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale);
 
@@ -275,53 +277,65 @@ function Analysis() {
     return (
         <Container maxWidth="md" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '40px' }}>
             {view === 'start' && (
-                <Container
-                    maxWidth="sm"
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        height: '80vh', // 전체 높이의 80%를 차지하도록 설정
-                        backgroundColor: '#f5f5f5', // 배경색 설정
-                        borderRadius: '10px', // 테두리 라운드 처리
-                        boxShadow: '0 3px 6px rgba(0, 0, 0, 0.1)' // 그림자 효과
-                    }}
-                >
-                    <Typography variant="h5" style={{ marginBottom: '20px', color: '#333', fontWeight: 600 }}>
-                        자소서 분석
-                    </Typography>
-                    <Typography variant="h6" style={{ marginBottom: '10px', color: '#333' }}>
-                        여러분이 입력한 자소서를 기반으로 분석해주는 메뉴입니다.
-                    </Typography>
-                    <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', fontWeight: 600 }}>
-                        <br /><br />
-                        ⟪ 자기소개서 분석 항목 ⟫
-                    </Typography>
-                    <Typography variant="h6" style={{ marginBottom: '20px', color: '#333' }}>
-                        수많은 합격 자기소개서 데이터를 통한 표절 검사
-                        <br /><br />
-                        자기소개서의 문법 오류를 알 수 있는 맞춤법 검사
-                        <br /><br />
-                        자기소개서에 쓰인 키워드를 통한 성향, 역량 검사
-                        <br /><br />
-                    </Typography>
-                    <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', textAlign: 'center' }}>
-                        자기소개서 분석 검사를 통해
-                        <br />
-                        자신의 자기소개서의 문제점을 쉽게 파악할 수 있고
-                        <br />
-                        수정 및 삭제할 단어, 문장을 찾을 수 있습니다.
-                        <br /><br />
-                    </Typography>
+                <div align="center"
+                     style={{backgroundImage: `url(${analysisImage})`,
+                         backgroundPosition: 'center',
+                         backgroundSize: 'cover',
+                         backgroundRepeat: 'no-repeat',
+                         width: '100vw',
+                         height: '100vh',
+                         marginTop:"-5%"}}>
+                    <Container
+                        maxWidth="sm"
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '80vh',
+                            backgroundColor: '#f5f5f5',
+                            borderRadius: '10px',
+                            marginTop:"2.2%",
+                            boxShadow: '0 3px 6px rgba(0, 0, 0, 0.1)' // 그림자 효과
+                        }}
+                    >
+                        <Typography variant="h5" style={{ marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                            자소서 분석
+                        </Typography>
+                        <Typography variant="h6" style={{ marginBottom: '10px', color: '#333' }}>
+                            여러분이 입력한 자소서를 기반으로 분석해주는 메뉴입니다.
+                        </Typography>
+                        <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                            <br /><br />
+                            ⟪ 자기소개서 분석 항목 ⟫
+                        </Typography>
+                        <Typography variant="h6" style={{ marginBottom: '20px', color: '#333' }}>
+                            수많은 합격 자기소개서 데이터를 통한 표절 검사
+                            <br /><br />
+                            자기소개서의 문법 오류를 알 수 있는 맞춤법 검사
+                            <br /><br />
+                            자기소개서에 쓰인 키워드를 통한 성향, 역량 검사
+                            <br /><br />
+                        </Typography>
+                        <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', textAlign: 'center' }}>
+                            자기소개서 분석 검사를 통해
+                            <br />
+                            자신의 자기소개서의 문제점을 쉽게 파악할 수 있고
+                            <br />
+                            수정 및 삭제할 단어, 문장을 찾을 수 있습니다.
+                            <br /><br />
+                        </Typography>
 
-                    <Button variant="contained" color="primary" onClick={handleStartAnalysis}>
-                        자소서 분석하러가기
-                    </Button>
-                </Container>
+                        <Button variant="contained" color="primary" onClick={handleStartAnalysis}>
+                            자소서 분석하러가기
+                        </Button>
+                    </Container>
+                </div>
             )}
 
-            {view === 'loading' && <CircularProgress />}
+            {view === 'loading' && (
+                <Loading />
+            )}
 
             {view === 'write' && (
                 <>
@@ -442,7 +456,7 @@ function Analysis() {
                         <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', fontWeight: 500 }}>
                             자기소개서의 키워드를 통해 역량 검사를 진행합니다.
                         </Typography>
-                        <Box mt={3} mb={2} width="100%" style={{ height: '400px', maxWidth: '800px' }}>
+                        <Box mt={3} mb={4} width="100%" style={{ height: '400px', maxWidth: '800px' }}>
                             <Bar
                                 ref={chartRef}
                                 data={chartData}
@@ -455,6 +469,12 @@ function Analysis() {
                                 }}
                             />
                         </Box>
+
+                        <Typography variant="h7" style={{ marginTop: '40px', marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                            ※본 자기소개서 분석결과는 저장되지 않습니다.
+                            <br />
+                            ※필요시 화면 캡쳐 부탁드립니다.
+                        </Typography>
                     </Paper>
                 </Container>
             )}

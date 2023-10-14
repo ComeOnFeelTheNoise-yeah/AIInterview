@@ -14,6 +14,7 @@ import {
 import {useCookies} from "react-cookie";
 import axios from "axios";
 import {Link} from "react-router-dom";
+import PageLoading from "../../components/PageLoading";
 
 export default function ChatBot() {
     const [showChat, setShowChat] = useState(false); // false: 자소서 선택 화면, true: ChatWindow 화면
@@ -127,7 +128,7 @@ export default function ChatBot() {
     return (
         <Container maxWidth={showChat ? "md" : "sm"} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '95vh' }}>
             {isLoading ? (
-                <Typography variant="h6">자소서 불러오는 중...</Typography>
+                <PageLoading />
             ) : (
                 <>
                     {!showChat ? (

@@ -5,6 +5,8 @@ import {Button} from "@mui/material";
 import {useCookies} from "react-cookie";
 import { useNavigate } from 'react-router-dom';
 import {PricingTable, PricingSlot, PricingDetail} from "react-pricing-table";
+import Loading from "../../components/Loading";
+import PageLoading from "../../components/PageLoading";
 
 export default function Payment(){
     const [userEmail, setUserEmail] = useState('');
@@ -156,7 +158,7 @@ export default function Payment(){
     return (
         <div>
             {loading ? (
-                <p>Loading...</p>
+                <PageLoading />
             ) : (
                 <>
                     <div style={{backgroundImage:"url(/img/img/paymentBGImage.png)",

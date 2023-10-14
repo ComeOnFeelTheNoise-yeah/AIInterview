@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import {useUserStore} from "../../stores";
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {useCookies} from "react-cookie";
 import {useEffect, useRef, useState} from "react";
 import Menu from '@mui/material/Menu';
@@ -16,12 +16,14 @@ import { useRemainingDays } from "../../useRemainingDays";
 import {Chip} from "@mui/material";
 import axios from "axios";
 
+
 export default function Navigation() {
     const [cookies, setCookies] = useCookies(['token']);
     const { user, setUser, removeUser } = useUserStore();
     const [userProfile, setUserProfile] = useState(user ? user.userProfile : "path-to-default-image.jpg");
     const [userNickname, setUserNickname] = useState(user ? user.userNickname : "");
     const { remainingDays, endDate, updateRemainingDays } = useRemainingDays();
+    const navigate = useNavigate();
 
     const [anchorEl, setAnchorEl] = useState(null);
     const profileBtnRef = useRef(null);
@@ -45,6 +47,7 @@ export default function Navigation() {
     const logOutHandler = () => {
         setCookies('token', '', {expires: new Date()});
         removeUser();
+        navigate('/');
     }
 
     const handleProfileClick = (event) => {

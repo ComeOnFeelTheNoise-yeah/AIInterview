@@ -68,12 +68,28 @@ function Titles({ data, itemsPerPage, currentPage, setSelectedContent }) {
     );
 }
 
+function splitByNumberedPattern(content) {
+    const pattern = /(?<!\d-)(\d+\.)|(\d+\))/g;  // 숫자-숫자. 패턴을 피하기 위한 lookbehind assertion과 숫자) 패턴 추가
+    return content.split(pattern);
+}
 
 function Content({ content }) {
     if (!content) return null;
 
-    return <div className="content">{content}</div>;
+    const contentParts = splitByNumberedPattern(content);
+
+    return (
+        <div className="content">
+            {contentParts.map((part, index) => {
+                if (index % 2 === 1) {
+                    return <span key={index}>{part}</span>;
+                }
+                return <div key={index}>{part}</div>;
+            })}
+        </div>
+    );
 }
+
 
 function Pagination({ totalPages, currentPage, setCurrentPage }) {
     const maxPageNumbersToShow = 10;

@@ -8,6 +8,7 @@ import com.react.project.entity.UserEntity;
 import com.react.project.security.TokenProvider;
 import com.react.project.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,5 +91,21 @@ public class AuthController {
         String userEmail = tokenProvider.getEmailFromToken(token);
         return authService.updateUserInfo(userEmail, updatedInfo);
     }
+
+    @GetMapping("/currentUserName")
+    public ResponseEntity<?> getCurrentUserName(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.split(" ")[1];
+        String userEmail = tokenProvider.getEmailFromToken(jwtToken);
+        UserEntity user = authService.getUserByEmail(userEmail);
+
+        if (user != null) {
+            Map<String, String> response = new HashMap<>();
+            response.put("name", user.getUserName());
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
 
 }

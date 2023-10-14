@@ -33,8 +33,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.io.IOException;
+import java.util.Map;
 
 import com.react.project.OpenAIApi;
 
@@ -259,6 +261,18 @@ public class AnalysisService {
             }
         }
         return results;
+    }
+
+    public Map<String, Integer> getAnalysisResults(String content) {
+        List<JSONObject> keywordAnalysis = analyzeKeywords(content);
+        Map<String, Integer> resultMap = new HashMap<>();
+
+        for (JSONObject jsonObject : keywordAnalysis) {
+            for (Object key : jsonObject.keySet()) {
+                resultMap.put((String) key, (int) jsonObject.get(key));
+            }
+        }
+        return resultMap;
     }
 
 }

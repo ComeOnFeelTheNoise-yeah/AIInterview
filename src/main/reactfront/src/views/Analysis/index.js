@@ -20,6 +20,7 @@ import { useCookies } from "react-cookie";
 import { Bar } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
 import { BarController, BarElement, CategoryScale, LinearScale, Chart } from 'chart.js';
+import { Paper } from '@mui/material';
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale);
 
@@ -36,6 +37,7 @@ function Analysis() {
     const [spellingCheckResult, setSpellingCheckResult] = useState([]);
     const chartRef = useRef(null);
     const [chartInstance, setChartInstance] = useState(null);
+    const [userName, setUserName] = useState('');
 
     const initialChartData = {
         labels: [],
@@ -58,22 +60,35 @@ function Analysis() {
     };
 
     useEffect(() => {
-        const updatedChartData = {
-            labels: Object.keys(analysisResults),
-            datasets: [
-                {
-                    label: '성향 분석 결과',
-                    data: Object.values(analysisResults),
-                    backgroundColor: 'rgba(75,192,192,0.6)',
-                    borderColor: 'rgba(75,192,192,1)',
-                    borderWidth: 1,
-                    hoverBackgroundColor: 'rgba(75,192,192,0.4)',
-                    hoverBorderColor: 'rgba(75,192,192,1)'
-                }
-            ]
+        // 여기서 서버에서 데이터를 가져옵니다.
+        const fetchAnalysisResults = async () => {
+            try {
+                const combinedText = questions.map((q, index) => `${q}\n${answers[index]}`).join('\n\n');
+                const response = await axios.post('/api/getAnalysisResults', combinedText);
+                const data = response.data;
+
+                const updatedChartData = {
+                    labels: Object.keys(data),
+                    datasets: [
+                        {
+                            label: '성향 분석 결과',
+                            data: Object.values(data),
+                            backgroundColor: 'rgba(75,192,192,0.6)',
+                            borderColor: 'rgba(75,192,192,1)',
+                            borderWidth: 1,
+                            hoverBackgroundColor: 'rgba(75,192,192,0.4)',
+                            hoverBorderColor: 'rgba(75,192,192,1)'
+                        }
+                    ]
+                };
+                setChartData(updatedChartData);
+            } catch (error) {
+                console.error("Error fetching analysis results:", error);
+            }
         };
-        setChartData(updatedChartData);
-    }, [analysisResults]);
+
+        fetchAnalysisResults();
+    }, [questions, answers]);
 
     useEffect(() => {
         if (chartInstance) {
@@ -81,24 +96,21 @@ function Analysis() {
         }
     }, [chartData]);
 
-    useEffect(() => {
-        const fetchUserEmail = async () => {
-            const token = cookies.token;
-            if (token) {
-                try {
-                    const userDetails = await axios.get('/api/auth/currentUser', {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    });
-                    setUserEmail(userDetails.data.userEmail);
-                } catch (error) {
-                    console.error("Error fetching user email:", error);
-                }
+    const fetchUserEmail = async () => {
+        const token = cookies.token;
+        if (token) {
+            try {
+                const userDetails = await axios.get('/api/auth/currentUser', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setUserEmail(userDetails.data.userEmail);
+            } catch (error) {
+                console.error("Error fetching user email:", error);
             }
-        };
-        fetchUserEmail();
-    }, [cookies.token]);
+        }
+    };
 
     useEffect(() => {
         if (chartInstance) {
@@ -218,6 +230,25 @@ function Analysis() {
         }
     };
 
+    const fetchUserName = async () => {
+        try {
+            const response = await axios.get('/api/auth/currentUserName', {
+                headers: {
+                    Authorization: `Bearer ${cookies.token}`
+                }
+            });
+            setUserName(response.data.name);
+        } catch (error) {
+            console.error("Error fetching user name:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchUserEmail();
+        fetchUserName();
+    }, [cookies.token]);
+
+
     const chartOptions = {
         scales: {
             x: {
@@ -225,20 +256,69 @@ function Analysis() {
             },
             y: {
                 type: 'linear',
+                min: 0,
+                max: 2000,
                 ticks: {
-                    stepSize: 20
+                    stepSize: 400
                 }
             }
         },
         maintainAspectRatio: false
     };
 
+    const isFormValid = () => {
+        return questions.every(q => q.trim() !== "") && answers.every(a => a.trim() !== "");
+    };
+
+    const textLines = (typeof result === "string") ? result.split('\n').length : 1;
+
     return (
         <Container maxWidth="md" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '40px' }}>
             {view === 'start' && (
-                <Button variant="contained" color="primary" onClick={handleStartAnalysis}>
-                    자소서 분석 시작하기
-                </Button>
+                <Container
+                    maxWidth="sm"
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '80vh', // 전체 높이의 80%를 차지하도록 설정
+                        backgroundColor: '#f5f5f5', // 배경색 설정
+                        borderRadius: '10px', // 테두리 라운드 처리
+                        boxShadow: '0 3px 6px rgba(0, 0, 0, 0.1)' // 그림자 효과
+                    }}
+                >
+                    <Typography variant="h5" style={{ marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                        자소서 분석
+                    </Typography>
+                    <Typography variant="h6" style={{ marginBottom: '10px', color: '#333' }}>
+                        여러분이 입력한 자소서를 기반으로 분석해주는 메뉴입니다.
+                    </Typography>
+                    <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                        <br /><br />
+                        ⟪ 자기소개서 분석 항목 ⟫
+                    </Typography>
+                    <Typography variant="h6" style={{ marginBottom: '20px', color: '#333' }}>
+                        수많은 합격 자기소개서 데이터를 통한 표절 검사
+                        <br /><br />
+                        자기소개서의 문법 오류를 알 수 있는 맞춤법 검사
+                        <br /><br />
+                        자기소개서에 쓰인 키워드를 통한 성향, 역량 검사
+                        <br /><br />
+                    </Typography>
+                    <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', textAlign: 'center' }}>
+                        자기소개서 분석 검사를 통해
+                        <br />
+                        자신의 자기소개서의 문제점을 쉽게 파악할 수 있고
+                        <br />
+                        수정 및 삭제할 단어, 문장을 찾을 수 있습니다.
+                        <br /><br />
+                    </Typography>
+
+                    <Button variant="contained" color="primary" onClick={handleStartAnalysis}>
+                        자소서 분석하러가기
+                    </Button>
+                </Container>
             )}
 
             {view === 'loading' && <CircularProgress />}
@@ -246,12 +326,14 @@ function Analysis() {
             {view === 'write' && (
                 <>
                     <Box display="flex" flexDirection="row" width="100%" justifyContent="center" position="relative">
-                        <Typography variant="h4">자소서 작성</Typography>
+                        <Typography variant="h4" style={{ marginBottom: '10px', color: '#333' }}>자소서 작성</Typography>
                         <Button variant="contained" onClick={openTitleDialog} style={{ position: 'absolute', right: 0, top: 0 }}>
                             자소서 불러오기
                         </Button>
                     </Box>
-
+                    <Typography variant="h6" style={{ marginBottom: '20px', color: '#333' }}>
+                        분석할 자기소개서를 입력해주세요!
+                    </Typography>
                     <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                         <DialogTitle>자소서 선택</DialogTitle>
                         <List>
@@ -296,49 +378,85 @@ function Analysis() {
 
                     <Box mt={2} display="flex" justifyContent="center">
                         <Button variant="contained" color="secondary" onClick={handleReset}>
-                            초기화
+                            내용 초기화
                         </Button>
                     </Box>
 
                     <Box mt={3} mb={5} width="100%" display="flex" justifyContent="center">
-                        <Button variant="contained" color="primary" onClick={handleCheck}>
-                            결과 확인
+                        <Button variant="contained" color="primary" onClick={handleCheck} disabled={!isFormValid()}>
+                            분석 결과 확인
                         </Button>
                     </Box>
                 </>
             )}
 
             {view === 'result' && (
-                <>
-                    <Typography variant="h5">분석 결과</Typography>
-                    <Typography variant="h6">Similarity: {result.similarity.toFixed(2)}%</Typography>
-                    <Typography variant="h6">Plagiarism: {result.isPlagiarized ? "Yes" : "No"}</Typography>
+                <Container maxWidth="md">
+                    <Paper elevation={3} style={{ padding: '20px', borderRadius: '10px' }}>
+                        <Typography variant="h5" gutterBottom style={{ color: '#333', fontWeight: 600 }}>분석 결과</Typography>
+                        <Typography variant="h6" gutterBottom>{userName}님의 자기소개서 분석 결과입니다. </Typography>
 
-                    <Box mt={3}>
-                        <Typography variant="h6">맞춤법 검사 결과:</Typography>
-                        {spellingCheckResult.map((result, index) => (
-                            <Box mt={2} key={index}>
-                                <Typography variant="h7">문제 {index + 1}:</Typography>
-                                <Typography variant="body1">{result}</Typography>
-                            </Box>
-                        ))}
-                    </Box>
+                        <Typography variant="h6" style={{ color: '#333', fontWeight: 600 }}>
+                            <br />
+                            ⟪ 표절 검사 ⟫
+                        </Typography>
+                        <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', fontWeight: 500 }}>
+                            약 1300개의 합격 자기소개서와 비교하여 표절여부를 검사합니다.
+                        </Typography>
 
-                    <Box mt={3} width="100%">
-                        <Bar
-                            ref={chartRef}
-                            data={chartData}  // 이 부분을 수정하여 chartData를 사용
-                            options={chartOptions}
-                            height={400}
-                            onElementsClick={(elements) => {
-                                if (elements.length > 0) {
-                                    const chart = chartRef.current.chartInstance;
-                                    setChartInstance(chart);
-                                }
-                            }}
-                        />
-                    </Box>
-                </>
+                        <Box mb={3}>
+                            <Typography variant="h6">합격 자소서와 유사도가 {result.similarity.toFixed(2)}%로</Typography>
+                            <Typography variant="h6">표절 여부 {result.isPlagiarized ? "검사 결과 표절로 판별되었습니다. " : "검사 결과 표절이 아닙니다. "}</Typography>
+                        </Box>
+
+                        <Box mt={3} mb={3}>
+                            <Typography variant="h6" style={{ color: '#333', fontWeight: 600 }}>
+                                <br />
+                                ⟪ 맞춤법 검사 ⟫
+                            </Typography>
+                            <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', fontWeight: 500 }}>
+                                자기소개서의 맞춤법 및 오타를 검사합니다.
+                            </Typography>
+
+                            {spellingCheckResult.map((result, index) => (
+                                <Box mt={2} key={index}>
+                                    <Typography variant="h7">⟦ 문제 {index + 1} 결과 ⟧</Typography>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        value={result}
+                                        rows={textLines}
+                                        multiline
+                                        InputProps={{
+                                            readOnly: true,
+                                        }}
+                                    />
+                                </Box>
+                            ))}
+                        </Box>
+
+                        <Typography variant="h6" style={{ color: '#333', fontWeight: 600 }}>
+                            <br />
+                            ⟪ 역량 검사 ⟫
+                        </Typography>
+                        <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', fontWeight: 500 }}>
+                            자기소개서의 키워드를 통해 역량 검사를 진행합니다.
+                        </Typography>
+                        <Box mt={3} mb={2} width="100%" style={{ height: '400px', maxWidth: '800px' }}>
+                            <Bar
+                                ref={chartRef}
+                                data={chartData}
+                                options={chartOptions}
+                                onElementsClick={(elements) => {
+                                    if (elements.length > 0) {
+                                        const chart = chartRef.current.chartInstance;
+                                        setChartInstance(chart);
+                                    }
+                                }}
+                            />
+                        </Box>
+                    </Paper>
+                </Container>
             )}
         </Container>
     );

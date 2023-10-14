@@ -40,5 +40,11 @@ public class AnalysisController {
         return ResponseEntity.ok(results);
     }
 
+    @PostMapping("/api/getAnalysisResults")
+    public ResponseEntity<Map<String, Integer>> getAnalysisResults(@RequestBody String content) {
+        Map<String, Integer> results = analysisService.getAnalysisResults(content);
+        return ResponseEntity.ok(results);
+    }
+
 }
 

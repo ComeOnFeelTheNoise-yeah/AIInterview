@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Button, TextField, Typography, Avatar, Container } from '@mui/material';
 import { useCookies } from "react-cookie";
+import {useNavigate} from "react-router-dom";
 
 export default function MemberChange() {
     const [isVerified, setIsVerified] = useState(false);
@@ -10,6 +11,7 @@ export default function MemberChange() {
     const [cookies] = useCookies(['token']);
     const [userProfile, setUserProfile] = useState(null);
     const [userProfilePreview, setUserProfilePreview] = useState(null);
+    const navigate = useNavigate();
 
     const [user, setUser] = useState({
         userEmail: '',
@@ -178,6 +180,8 @@ export default function MemberChange() {
 
             if (response.data.result) {
                 alert("사용자 정보가 성공적으로 수정되었습니다.");
+                navigate('/');
+                window.location.reload();
             } else {
                 alert("사용자 정보 수정 중 오류가 발생했습니다.");
             }

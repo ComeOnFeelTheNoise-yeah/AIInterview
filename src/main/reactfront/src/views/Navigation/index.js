@@ -83,6 +83,13 @@ export default function Navigation() {
         }
     }, []);
 
+    useEffect(() => {
+        if (user) {
+            setUserNickname(user.userNickname || "");
+            setUserProfile(user.userProfile || "path-to-default-image.jpg");
+        }
+    }, [user]);
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="fixed" sx={{ backgroundColor: '#ffffff', color: 'black' }}>

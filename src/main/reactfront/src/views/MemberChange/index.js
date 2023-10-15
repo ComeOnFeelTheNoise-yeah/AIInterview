@@ -207,16 +207,44 @@ export default function MemberChange() {
 
     if (!isVerified) {
         return (
-            <Container maxWidth="xs" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-                <Typography variant="h6">비밀번호 확인</Typography>
+            <Container
+                maxWidth="xs"
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100vh',
+                    backgroundColor: '#f4f4f8',
+                    padding: 3
+                }}
+            >
+                <Typography
+                    variant="h6"
+                    sx={{ marginBottom: 2 }}
+                >
+                    비밀번호 확인
+                </Typography>
                 <TextField
                     type="password"
                     label="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    sx={{ marginBottom: 1 }}
                 />
-                <Button onClick={handlePasswordVerification}>확인</Button>
-                {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+                {errorMessage && <Typography color="error" sx={{ marginBottom: 2 }}>{errorMessage}</Typography>}
+                <Button
+                    sx={{
+                        backgroundColor: '#3f51b5',
+                        color: 'white',
+                        '&:hover': {
+                            backgroundColor: '#303f9f'
+                        }
+                    }}
+                    onClick={handlePasswordVerification}
+                >
+                    확인
+                </Button>
             </Container>
         );
     }
@@ -291,7 +319,7 @@ export default function MemberChange() {
                         검색
                     </Button>
                 </Box>
-                <Box mt={2}>
+                <Box mt={4}>
                     <Button fullWidth onClick={handleUpdate}>
                         수정하기
                     </Button>

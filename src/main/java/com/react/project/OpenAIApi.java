@@ -10,7 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class OpenAIApi {
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "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";
 
     public String ask(String prompt){
         String responeBody = "";
@@ -24,7 +24,7 @@ public class OpenAIApi {
         jsonBody.put("messages", messages);
         jsonBody.put("max_tokens", 1000);
         jsonBody.put("temperature", 0.8);
-        jsonBody.put("model", "gpt-3.5-turbo");
+        jsonBody.put("model", "gpt-4");
 
         try{
             HttpClient client = HttpClient.newHttpClient();
@@ -97,5 +97,38 @@ public class OpenAIApi {
             System.out.println("Error: 'choices' key not found in response: " + responseJson);
         }
         return "API 호출 중 오류가 발생했습니다. ";
+    }
+
+    public String question(String prompt){
+        String responeBody = "";
+
+        JSONArray messages = new JSONArray();
+        messages.put(new JSONObject().put("role", "system").put("content", "You are a helpful assistant."));
+        String combinedPrompt = prompt + "보낸 자소서를 참고해서 답변은 내가 할꺼니까 모의 면접 문제만 한국어로 문제를 내줘";
+        messages.put(new JSONObject().put("role", "user").put("content", combinedPrompt));
+
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("messages", messages);
+        jsonBody.put("max_tokens", 1000);
+        jsonBody.put("temperature", 0.8);
+        jsonBody.put("model", "gpt-4");
+
+        try{
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.openai.com/v1/chat/completions"))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + API_KEY)
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody.toString()))
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            responeBody = extractAnswer(response.body());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return responeBody;
     }
 }

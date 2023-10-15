@@ -13,4 +13,8 @@ public class GptService {
     public String ask(String prompt){
         return openAiApi.ask(prompt);
     }
+
+    public String question(String prompt){
+        return openAiApi.question(prompt);
+    }
 }

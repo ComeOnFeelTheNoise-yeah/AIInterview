@@ -175,9 +175,7 @@ export default function Payment(){
                             <h5 style={{color:"#1c1c1c", marginBottom:"-2px"}}> 남은 이용일 수 : {remainingDays}일 </h5>
                             <h5 style={{color:"#1c1c1c", marginTop:"-2px"}}>{remainingDays > 0 ? `이용 만료 예정일: ${endDate.toLocaleDateString()}` : "이용권이 없습니다"}</h5>
                             <h5 style={{color:"#1c1c1c", marginTop:"-3px"}}> 프리미엄 서비스 이용시 누릴 수 있는 혜택 :
-                                실시간 오늘의 뉴스,
                                 특별한 자소서 분석,
-                                Community 활동,
                                 기업별 자소서 항목,
                                 면접 예상대답 챗봇</h5>
                             <br/>

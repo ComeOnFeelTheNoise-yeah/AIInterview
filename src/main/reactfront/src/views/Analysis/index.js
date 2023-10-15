@@ -296,6 +296,7 @@ function Analysis() {
                             backgroundColor: '#f5f5f5',
                             borderRadius: '10px',
                             marginTop:"2.2%",
+                            marginLeft:"36%",
                             boxShadow: '0 3px 6px rgba(0, 0, 0, 0.1)' // 그림자 효과
                         }}
                     >

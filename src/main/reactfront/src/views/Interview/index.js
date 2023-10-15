@@ -8,11 +8,15 @@ import {
     ListItemText,
     List,
     DialogContent,
+    Paper,
+    Divider,
     ListItem, Dialog, DialogActions
 } from '@mui/material';
 import { useCookies } from "react-cookie";
 import axios from "axios";
 import ChatQuestion from "../../components/ChatQuestion";
+import interviewImage from '../../assets/images/interview_bg.gif';
+import LoadingInterview from "../../components/LoadingInterview";
 
 const TextToSpeech = ({ textToRead }) => {
     const playTextToSpeech = () => {
@@ -21,7 +25,9 @@ const TextToSpeech = ({ textToRead }) => {
     };
 
     return (
-        <button onClick={playTextToSpeech}>문제 목록 읽기</button>
+        <Button variant="contained" size="small" onClick={playTextToSpeech}>
+            문제 읽기
+        </Button>
     );
 };
 
@@ -47,6 +53,11 @@ export default function Interview() {
     const [selectedIntro, setSelectedIntro] = useState(null);
     const [step, setStep] = useState(1);
     const [gptResponsesReceived, setGptResponsesReceived] = useState(0);
+    const [showStartScreen, setShowStartScreen] = useState(true);
+
+    const handleStartButtonClick = () => {
+        setShowStartScreen(false); // 시작 화면을 숨김
+    };
 
     const openTitleDialog = async () => {
         try {
@@ -213,6 +224,7 @@ export default function Interview() {
     }, [userEmail]);
 
     const startInterview = () => {
+        setStep(3);
         if (problems.length > 0) {
             setRecordedText([]); // 녹음된 텍스트 초기화
             setInterviewCompleted(false);
@@ -231,123 +243,290 @@ export default function Interview() {
         }
     };
 
+    const goToStartScreen = () => {
+        setShowStartScreen(true);
+    };
+
+    const goBack = () => {
+        if (step > 1) {
+            setStep(step - 1);
+        }
+    };
+
     return (
-        <div>
-            <h1>모의 면접</h1>
+        <Container maxWidth="md" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '40px' }}>
+        {showStartScreen ? (
+                <div align="center"
+                     style={{backgroundImage: `url(${interviewImage})`,
+                         backgroundPosition: 'center',
+                         backgroundSize: 'cover',
+                         backgroundRepeat: 'no-repeat',
+                         width: '100vw',
+                         height: '100vh',
+                         marginTop:"-5%"}}>
+                    <Container
+                        maxWidth="sm"
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '80vh',
+                            backgroundColor: '#f5f5f5',
+                            borderRadius: '10px',
+                            marginTop:"2.2%",
+                            marginLeft:"37%",
+                            boxShadow: '0 3px 6px rgba(0, 0, 0, 0.1)' // 그림자 효과
+                        }}
+                    >
+                        <Typography variant="h5" style={{ marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                            모의면접
+                        </Typography>
+                        <Typography variant="h6" style={{ marginBottom: '10px', color: '#333' }}>
+                            입력한 자소서를 기반으로 모의면접을 할 수 있는 메뉴입니다.
+                        </Typography>
+                        <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                            <br /><br />
+                            ⟪ 모의 면접 소개 ⟫
+                        </Typography>
+                        <Typography variant="h6" style={{ marginBottom: '20px', color: '#333' }}>
+                            입력한 자기소개서를 통해
+                            <br /><br />
+                            예상 면접 질문을 분석 • 추출하여
+                            <br /><br />
+                            가상의 면접관과 면접을 진행합니다.
+                            <br /><br />
+                        </Typography>
+                        <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', textAlign: 'center' }}>
+                            모의 면접 시스템을 통해
+                            <br />
+                            각 회사의 예상 질문을 알 수 있고
+                            <br />
+                            대답에 대한 보완점을 찾을 수 있는 등
+                            <br />
+                            각 면접에 대한 대비를 할 수 있습니다.
+                            <br />
+                            <br />
+                        </Typography>
 
-            {step === 1 && (
-                <div>
-                    <Button variant="contained" color="primary" onClick={openTitleDialog}>
-                        자소서 선택하기
-                    </Button>
-
-                    <Dialog open={openSelectDialog} onClose={() => setOpenSelectDialog(false)}>
-                        <DialogTitle>자소서 선택</DialogTitle>
-                        <DialogContent>
-                            <List>
-                                {titlesList.map((title, index) => (
-                                    <ListItem button key={index} onClick={() => selectIntroduceContent(title)}>
-                                        <ListItemText primary={title} />
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={() => setOpenSelectDialog(false)} color="primary">
-                                취소
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
+                        <Button variant="contained" color="primary" onClick={handleStartButtonClick}>
+                            모의면접 하러가기
+                        </Button>
+                    </Container>
                 </div>
-            )}
-
-            {step === 2 && (
+            ) : (
                 <>
-                    <div style={{ display: 'none' }}>
-                        <ChatQuestion introContent={selectedIntro} onGptResponse={handleGptResponse} />
-                    </div>
-                    {gptResponse ? (
+                    {step === 1 && (
+                        <Container
+                            maxWidth="sm"
+                            style={{
+                                position: 'relative',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '60vh',
+                                backgroundColor: '#f5f5f5',
+                                borderRadius: '10px',
+                                marginTop:"10%",
+                                boxShadow: '0 3px 6px rgba(0, 0, 0, 0.1)' // 그림자 효과
+                            }}
+                        >
+                            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Button
+                                    onClick={goToStartScreen}
+                                    style={{
+                                        position: 'absolute',
+                                        top: '10px',
+                                        left: '10px',
+                                        zIndex: 10
+                                    }}
+                                >
+                                    이전
+                                </Button>
+                                <Typography variant="h5" style={{ marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                                    Step1. 자기소개서 제출
+                                </Typography>
+                            </div>
+                            <Typography variant="h6" style={{ color: '#333', alignItems: 'center' }}>
+                                입력한 자기소개서를 키워드를 분석하여
+                                <br /><br />
+                            </Typography>
+                            <Typography variant="h6" style={{ color: '#333', alignItems: 'center' }}>
+                                예상 면접 질문을 추출하고
+                                <br /><br />
+                            </Typography>
+                            <Typography variant="h6" style={{ marginBottom: '20px', color: '#333', alignItems: 'center' }}>
+                                가상의 면접관과 면접을 진행합니다.
+                                <br /><br />
+                            </Typography>
+                            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                <Button variant="contained" color="primary" onClick={openTitleDialog}>
+                                    자소서 선택하기
+                                </Button>
+                            </div>
+                            <Dialog open={openSelectDialog} onClose={() => setOpenSelectDialog(false)}>
+                                <DialogTitle style={{ textAlign: 'center' }}>자소서 선택</DialogTitle>
+                                <DialogContent>
+                                    <List>
+                                        {titlesList.map((title, index) => (
+                                            <ListItem button key={index} onClick={() => selectIntroduceContent(title)}>
+                                                <ListItemText primary={title} />
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </DialogContent>
+                                <DialogActions style={{ justifyContent: 'center' }}>
+                                    <Button onClick={() => setOpenSelectDialog(false)} color="primary">
+                                        취소
+                                    </Button>
+                                </DialogActions>
+                            </Dialog>
+                        </Container>
+                    )}
+
+                    {step === 2 && (
+                        <>
+                            <Container
+                                maxWidth="sm"
+                                style={{
+                                    position: 'relative',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    height: '60vh',
+                                    backgroundColor: '#f5f5f5',
+                                    borderRadius: '10px',
+                                    marginTop:"10%",
+                                    boxShadow: '0 3px 6px rgba(0, 0, 0, 0.1)' // 그림자 효과
+                                }}
+                            >
+                                <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Button
+                                        onClick={goBack}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '10px',
+                                            left: '10px',
+                                            zIndex: 10
+                                        }}
+                                    >
+                                        이전
+                                    </Button>
+                                    <Typography variant="h5" style={{ color: '#333', fontWeight: 600 }}>
+                                        Step2. 질문 추출
+                                    </Typography>
+                                </div>
+                                <div style={{ display: 'none' }}>
+                                    <ChatQuestion introContent={selectedIntro} onGptResponse={handleGptResponse} />
+                                </div>
+                                {gptResponse ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Typography variant="h6" style={{ marginTop: '20px', color: '#333' }}>
+                                            이제 당신 차례입니다 !
+                                            <br /><br />
+                                        </Typography>
+                                        <Typography variant="h6" style={{ color: '#333' }}>
+                                            자신감을 가지고
+                                            <br /><br />
+                                        </Typography>
+                                        <Typography variant="h6" style={{ marginBottom: '20px', color: '#333' }}>
+                                            면접관이 하는 질문에 대답해주세요 !
+                                            <br /><br />
+                                        </Typography>
+                                        <Button variant="contained" color="primary" onClick={startInterview}>
+                                            면접 시작
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <LoadingInterview />
+                                )}
+                            </Container>
+                        </>
+                    )}
+
+                    {step === 3 && (
                         <div>
-                            <h2>GPT 응답</h2>
-                            <p>{gptResponse}</p>
-                            <TextToSpeech textToRead={problems.map(problem => problem.content).join('. ')} />
-                            <Button variant="contained" color="primary" onClick={() => setStep(3)}>
-                                면접 시작 화면으로 이동
-                            </Button>
+                            {interviewInProgress ? (
+                                <div>
+                                    <div style={{ textAlign: 'center', width: '100%' }}> {/* 중앙 정렬을 위한 스타일 추가 */}
+                                        <Typography variant="h5" align="center" style={{ color: '#333', fontWeight: 600 }}>
+                                            면접
+                                        </Typography>
+                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                            <Typography variant="h6" align="center" style={{ marginTop: '5px', marginRight: '15px', color: '#333' }}>
+                                                면접 질문 : {problems[currentProblemIndex].content}
+                                            </Typography>
+                                            <TextToSpeech textToRead={problems[currentProblemIndex].content} />
+                                        </div>
+                                        <div style={{ marginTop: '20px', marginBottom: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+                                            <div style={{ flex: 1, height: '500px' }}>
+                                                {showImage && <img alt="people" src="/img/img/people.jpg" style={{ height: '100%', width: 'auto', margin: '0px 10px 0px 0px' }} />}
+                                            </div>
+                                            <div style={{ flex: 1, height: '500px' }}>
+                                                <video ref={videoRef} autoPlay playsInline style={{ height: '100%', width: 'auto' }}></video>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <Button variant="contained" color="success" onClick={startListening} disabled={listening} style={{ marginRight: '10px'}}>
+                                                대답 하기
+                                            </Button>
+                                            <Button variant="contained" color="error" onClick={stopListening} disabled={!listening} style={{ marginRight: '10px' }}>
+                                                대답 끝
+                                            </Button>
+                                            <Button variant="outlined" onClick={saveRecordedText}>대답 저장</Button>
+                                        </div>
+                                        <div>
+                                            <p>{recognizedText}</p>
+                                        </div>
+                                        <Button variant="contained" color="primary" style={{ marginRight: '15px' }} onClick={nextProblem}>
+                                            다음 문제
+                                        </Button>
+                                        <Button variant="contained" color="secondary" onClick={handleInterviewCompletion}>
+                                            면접 종료
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : null}
+
+                            {interviewCompleted && (
+                                <Container maxWidth="md" style={{ marginTop: '10px' }}>
+                                    <Paper elevation={3} style={{ padding: '30px' }}>
+                                        <Typography variant="h4" align="center" gutterBottom>
+                                            면접 완료
+                                        </Typography>
+                                        <Divider style={{ margin: '20px 0' }} />
+                                        <Typography variant="h6" gutterBottom style={{ color: '#333', fontWeight: 'bold' }}>
+                                            면접 기록
+                                        </Typography>
+                                        <List>
+                                            {problems.map((problem, index) => (
+                                                <div key={`interview-set-${index}`}>
+                                                    <ListItem>
+                                                        <ListItemText primary={`질문${problem.content}`} />
+                                                    </ListItem>
+                                                    {recordedText[index] && (
+                                                        <ListItem>
+                                                            <ListItemText primary={`대답: ${recordedText[index]}`} />
+                                                        </ListItem>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </List>
+                                        <Typography variant="h7" style={{ marginTop: '100px', marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                                            ※본 면접 기록은 저장되지 않습니다.
+                                            <br />
+                                            ※필요시 화면 캡쳐 부탁드립니다.
+                                        </Typography>
+                                    </Paper>
+                                </Container>
+                            )}
                         </div>
-                    ) : (
-                        <p>챗봇 불러오는중...</p>
                     )}
                 </>
             )}
-
-            {step === 3 && (
-                <div>
-                    <h2>자기 소개</h2>
-                    <div style={{ height: '60vh', overflowY: 'auto', border: '1px solid #ddd', padding: '10px' }}>
-                        {loadedContent && loadedContent.map((item, index) => (
-                            <Box key={index} mt={2} width="100%">
-                                <Typography variant="subtitle1">{`문제 ${index + 1}: ${item.question}`}</Typography>
-                                <Typography variant="body1" style={{ marginTop: '10px', whiteSpace: 'pre-line' }}>
-                                    {item.answer}
-                                </Typography>
-                            </Box>
-                        ))}
-                    </div>
-
-                    <Button variant="contained" color="primary" onClick={startInterview}>
-                        면접 시작
-                    </Button>
-
-                    {interviewInProgress ? (
-                        <div>
-                            <h2>면접 질문</h2>
-                            <p>{problems[currentProblemIndex].content}</p>
-                            <div>
-                                <button onClick={startListening} disabled={listening}>
-                                    음성 인식 시작
-                                </button>
-                                <button onClick={stopListening} disabled={!listening}>
-                                    음성 인식 멈춤
-                                </button>
-                                <button onClick={saveRecordedText}>음성 인식 완료</button>
-                                <div>
-                                    <p>{recognizedText}</p>
-                                </div>
-                            </div>
-                            <TextToSpeech textToRead={problems[currentProblemIndex].content} />
-                            <Button variant="contained" color="primary" onClick={nextProblem}>
-                                다음 문제
-                            </Button>
-                            <Button variant="contained" color="secondary" onClick={handleInterviewCompletion}>
-                                면접 종료
-                            </Button>
-                            {showImage && <img alt="people" src="/img/img/people.jpg" height='500' style={{margin: '0px 10px 0px 0px'}}/>}
-                            <video ref={videoRef} autoPlay playsInline height="500"></video>
-                        </div>
-                    ) : null}
-
-                    {interviewCompleted && (
-                        <div>
-                            <h2>면접 완료</h2>
-                            <p>면접에서 음성 인식된 텍스트:</p>
-                            <ul>
-                                {problems.map((problem, index) => (
-                                    <li key={`problem-${index}`}>
-                                        <strong>문제 내용:</strong> {problem.content}
-                                    </li>
-                                ))}
-                                {recordedText.map((text, index) => (
-                                    <li key={`recordedText-${index}`}>
-                                        <strong>음성 인식 결과:</strong> {text}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
+        </Container>
     );
 
 }

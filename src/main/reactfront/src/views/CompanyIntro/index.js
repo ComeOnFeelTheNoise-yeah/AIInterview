@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import "./style.css";  // CSS 파일을 import 합니다.
 import selfIntroData from "./self_intro_data.json";
+import searchImage from '../../assets/images/search.png';
 
 export default function CompanyIntro(){
     const [currentPage, setCurrentPage] = useState(1);

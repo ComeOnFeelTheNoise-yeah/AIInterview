@@ -10,7 +10,7 @@ import {
     DialogContent,
     Paper,
     Divider,
-    ListItem, Dialog, DialogActions
+    ListItem, Dialog, DialogActions, Stack
 } from '@mui/material';
 import { useCookies } from "react-cookie";
 import axios from "axios";
@@ -54,6 +54,15 @@ export default function Interview() {
     const [step, setStep] = useState(1);
     const [gptResponsesReceived, setGptResponsesReceived] = useState(0);
     const [showStartScreen, setShowStartScreen] = useState(true);
+    const [activeTab, setActiveTab] = useState('interviewRecord'); // 'interviewRecord' 또는 'answerAnalysis'
+
+    const handleInterviewRecordClick = () => {
+        setActiveTab('interviewRecord');
+    };
+
+    const handleAnswerAnalysisClick = () => {
+        setActiveTab('answerAnalysis');
+    };
 
     const handleStartButtonClick = () => {
         setShowStartScreen(false); // 시작 화면을 숨김
@@ -480,7 +489,7 @@ export default function Interview() {
                                         <div>
                                             <p>{recognizedText}</p>
                                         </div>
-                                        <Button variant="contained" color="primary" style={{ marginRight: '15px' }} onClick={nextProblem}>
+                                        <Button variant="contained" color="primary" style={{ marginRight: '15px' }} onClick={nextProblem} disabled={currentProblemIndex >= problems.length - 1}>
                                             다음 문제
                                         </Button>
                                         <Button variant="contained" color="secondary" onClick={handleInterviewCompletion}>
@@ -492,34 +501,84 @@ export default function Interview() {
 
                             {interviewCompleted && (
                                 <Container maxWidth="md" style={{ marginTop: '10px' }}>
-                                    <Paper elevation={3} style={{ padding: '30px' }}>
-                                        <Typography variant="h4" align="center" gutterBottom>
-                                            면접 완료
-                                        </Typography>
-                                        <Divider style={{ margin: '20px 0' }} />
-                                        <Typography variant="h6" gutterBottom style={{ color: '#333', fontWeight: 'bold' }}>
+                                    <Stack direction="row">
+                                        <Button
+                                            variant={activeTab === 'interviewRecord' ? 'contained' : 'outlined'}
+                                            onClick={handleInterviewRecordClick}
+                                        >
                                             면접 기록
-                                        </Typography>
-                                        <List>
-                                            {problems.map((problem, index) => (
-                                                <div key={`interview-set-${index}`}>
-                                                    <ListItem>
-                                                        <ListItemText primary={`질문${problem.content}`} />
-                                                    </ListItem>
-                                                    {recordedText[index] && (
+                                        </Button>
+                                        <Button
+                                            variant={activeTab === 'answerAnalysis' ? 'contained' : 'outlined'}
+                                            onClick={handleAnswerAnalysisClick}
+                                        >
+                                            대답 분석
+                                        </Button>
+                                    </Stack>
+
+                                    {activeTab === 'interviewRecord' ? (
+                                        <Paper elevation={3} style={{ padding: '30px' }}>
+                                            <Typography variant="h4" align="center" gutterBottom>
+                                                면접 완료
+                                            </Typography>
+                                            <Divider style={{ margin: '20px 0' }} />
+                                            <Typography variant="h6" gutterBottom style={{ color: '#333', fontWeight: 'bold' }}>
+                                                면접 기록
+                                            </Typography>
+                                            <List>
+                                                {problems.map((problem, index) => (
+                                                    <div key={`interview-set-${index}`}>
                                                         <ListItem>
-                                                            <ListItemText primary={`대답: ${recordedText[index]}`} />
+                                                            <ListItemText primary={`질문${problem.content}`} />
                                                         </ListItem>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </List>
-                                        <Typography variant="h7" style={{ marginTop: '100px', marginBottom: '20px', color: '#333', fontWeight: 600 }}>
-                                            ※본 면접 기록은 저장되지 않습니다.
-                                            <br />
-                                            ※필요시 화면 캡쳐 부탁드립니다.
-                                        </Typography>
-                                    </Paper>
+                                                        {recordedText[index] && (
+                                                            <ListItem>
+                                                                <ListItemText primary={`대답: ${recordedText[index]}`} />
+                                                            </ListItem>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </List>
+                                            <Typography variant="h7" style={{ marginTop: '100px', marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                                                ※본 면접 기록은 저장되지 않습니다.
+                                                <br />
+                                                ※필요시 화면 캡쳐 부탁드립니다.
+                                            </Typography>
+                                        </Paper>
+                                    ) : (
+                                        <Paper elevation={3} style={{ padding: '30px' }}>
+                                            <Typography variant="h4" align="center" gutterBottom>
+                                                면접 완료
+                                            </Typography>
+                                            <Divider style={{ margin: '20px 0' }} />
+                                            <Typography variant="h6" gutterBottom style={{ color: '#333', fontWeight: 'bold' }}>
+                                                대답 분석
+                                            </Typography>
+                                            <Typography variant="h7" style={{ marginTop: '100px', marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                                                ※대답이 없으면 분석이 진행되지 않습니다.
+                                                <br />
+                                            </Typography>
+                                            <List>
+                                                {problems.map((problem, index) => (
+                                                    recordedText[index] ? (
+                                                        <div key={`interview-set-${index}`}>
+                                                            <ListItem>
+                                                                <ListItemText primary={`질문${problem.content}`} />
+                                                            </ListItem>
+                                                            <ListItem>
+                                                                <ListItemText primary={`대답: ${recordedText[index]}`} />
+                                                            </ListItem>
+                                                        </div>
+                                                    ) : null
+                                                ))}
+                                            </List>
+                                            <Typography variant="h7" style={{ marginTop: '100px', marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                                                ※본 분석 기록은 저장되지 않습니다.
+                                                <br />
+                                                ※필요시 화면 캡쳐 부탁드립니다.
+                                            </Typography>
+                                        </Paper>
+                                    )}
                                 </Container>
                             )}
                         </div>

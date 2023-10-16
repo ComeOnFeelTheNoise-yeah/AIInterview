@@ -6,6 +6,7 @@ import com.react.project.service.AuthService;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class AnalysisController {
 
@@ -45,6 +47,13 @@ public class AnalysisController {
         Map<String, Integer> results = analysisService.getAnalysisResults(content);
         return ResponseEntity.ok(results);
     }
+
+    @PostMapping("/v1/analyzeSentiments")
+    public ResponseEntity<String> analyzeSentiments(@RequestBody String content) {
+        String result = analysisService.interviewAnswerAnalysis(content);
+        return ResponseEntity.ok(result);
+    }
+
 
 }
 

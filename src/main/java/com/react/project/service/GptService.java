@@ -17,4 +17,6 @@ public class GptService {
     public String question(String prompt){
         return openAiApi.question(prompt);
     }
+
+    public String interviewAnswerAnalysis(String prompt){return openAiApi.interviewAnswerAnalysis(prompt);}
 }

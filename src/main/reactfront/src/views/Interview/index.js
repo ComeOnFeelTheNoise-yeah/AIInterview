@@ -55,6 +55,27 @@ export default function Interview() {
     const [gptResponsesReceived, setGptResponsesReceived] = useState(0);
     const [showStartScreen, setShowStartScreen] = useState(true);
     const [activeTab, setActiveTab] = useState('interviewRecord'); // 'interviewRecord' 또는 'answerAnalysis'
+    const [sentiments, setSentiments] = useState([]);
+
+    const sentimentAPI = axios.create({
+        baseURL: "http://localhost:8080/",
+        headers: {
+            "X-NCP-APIGW-API-KEY-ID": "uo316pxscv",
+            "X-NCP-APIGW-API-KEY": "SRsgIkbWRJvew5g4NB7yIg0t9l2UyA5qnn7Po7S3"
+        }
+    });
+
+    const analyzeSentiment = async (text) => {
+        try {
+            const response = await sentimentAPI.post("/v1/analyzeSentiments", {
+                content: text
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error analyzing sentiment:", error);
+            return null;
+        }
+    };
 
     const handleInterviewRecordClick = () => {
         setActiveTab('interviewRecord');
@@ -176,12 +197,16 @@ export default function Interview() {
         }
     };
 
-    const saveRecordedText = () => {
+    const saveRecordedText = async () => {
         if (recognizedText.trim() !== "") {
+            const sentimentResult = await analyzeSentiment(recognizedText);
+            setSentiments([...sentiments, sentimentResult]);
+            console.log("Sentiment Analysis Result:", sentimentResult);
             setRecordedText([...recordedText, recognizedText]);
-            setRecognizedText(""); // 음성 인식 텍스트 초기화
+            setRecognizedText("");
         }
     };
+
 
     const handleInterviewCompletion = () => {
         setInterviewCompleted(true);
@@ -568,6 +593,11 @@ export default function Interview() {
                                                             <ListItem>
                                                                 <ListItemText primary={`대답: ${recordedText[index]}`} />
                                                             </ListItem>
+                                                            {sentiments[index] && (
+                                                                <ListItem>
+                                                                    <ListItemText primary={`감정 분석 결과: ${sentiments[index].result}`}/>
+                                                                </ListItem>
+                                                            )}
                                                         </div>
                                                     ) : null
                                                 ))}
@@ -587,5 +617,4 @@ export default function Interview() {
             )}
         </Container>
     );
-
 }

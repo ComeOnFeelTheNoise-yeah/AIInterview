@@ -49,6 +49,10 @@ public class AnalysisService {
     private List<String> storedTexts;
     private List<JSONObject> keywordDataList;
 
+    private final String CLOVA_API_URL = "https://naveropenapi.apigw.ntruss.com/sentiment-analysis/v1/analyze";
+    private final String API_KEY_ID = "uo316pxscv";
+    private final String API_KEY = "SRsgIkbWRJvew5g4NB7yIg0t9l2UyA5qnn7Po7S3";
+
     public AnalysisService() throws Exception {
         this.komoran = new Komoran(DEFAULT_MODEL.FULL);
         this.storedTexts = loadStoredTexts();
@@ -273,6 +277,29 @@ public class AnalysisService {
             }
         }
         return resultMap;
+    }
+
+    public String interviewAnswerAnalysis(String content) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        // HTTP 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-NCP-APIGW-API-KEY-ID", API_KEY_ID);
+        headers.set("X-NCP-APIGW-API-KEY", API_KEY);
+        headers.set("Content-Type", "application/json");
+
+        // 요청 본문 생성
+        Map<String, String> body = new HashMap<>();
+        body.put("content", content);
+
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
+
+        // API 요청
+        ResponseEntity<String> response = restTemplate.exchange(CLOVA_API_URL, HttpMethod.POST, entity, String.class);
+        System.out.println("Response from CLOVA: " + response.getBody());
+
+        // 응답 본문 반환
+        return response.getBody();
     }
 
 }

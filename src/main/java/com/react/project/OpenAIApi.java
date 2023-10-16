@@ -10,7 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class OpenAIApi {
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "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";
 
     public String ask(String prompt){
         String responeBody = "";
@@ -105,6 +105,39 @@ public class OpenAIApi {
         JSONArray messages = new JSONArray();
         messages.put(new JSONObject().put("role", "system").put("content", "You are a helpful assistant."));
         String combinedPrompt = prompt + "보낸 자소서를 참고해서 답변은 내가 할꺼니까 모의 면접 문제만 한국어로 문제를 내줘";
+        messages.put(new JSONObject().put("role", "user").put("content", combinedPrompt));
+
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("messages", messages);
+        jsonBody.put("max_tokens", 1000);
+        jsonBody.put("temperature", 0.8);
+        jsonBody.put("model", "gpt-4");
+
+        try{
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.openai.com/v1/chat/completions"))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + API_KEY)
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody.toString()))
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            responeBody = extractAnswer(response.body());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return responeBody;
+    }
+
+    public String interviewAnswerAnalysis(String prompt){
+        String responeBody = "";
+
+        JSONArray messages = new JSONArray();
+        messages.put(new JSONObject().put("role", "system").put("content", "You are a helpful assistant."));
+        String combinedPrompt = prompt + "면접 질문이랑 그에 대한 대답인데 대답을 분석해주고 보완점, 합격을 위한 팁을 한국어로 알려줘";
         messages.put(new JSONObject().put("role", "user").put("content", combinedPrompt));
 
         JSONObject jsonBody = new JSONObject();

@@ -24,4 +24,9 @@ public class CommentEntity {
     private String commentUserProfile;
     private String commentUserNickname;
     private LocalDateTime commentWriteDate;
+
+    @PrePersist
+    public void prePersist() {
+        this.commentWriteDate = LocalDateTime.now();
+    }
 }

@@ -41,8 +41,18 @@ const BoardDetail = () => {
             }
         };
 
+        const fetchComments = async () => {
+            try {
+                const response = await axios.get(`/board/${boardId}/comments`);
+                setComments(response.data);
+            } catch (error) {
+                console.error("Error fetching comments:", error);
+            }
+        };
+
         fetchBoardDetail();
         fetchCurrentUser();
+        fetchComments();
     }, [boardId, cookies.token]);
 
     const handleEdit = () => {
@@ -67,13 +77,22 @@ const BoardDetail = () => {
     // 댓글을 서버에 전송하는 함수
     const handlePostComment = async () => {
         try {
-            const response = await axios.post(`/board/${boardId}/comment`, { text: comment });
-            setComments([...comments, response.data]);  // 새로운 댓글을 목록에 추가
-            setComment('');  // 입력 양식 초기화
+            const commentData = {
+                boardNumber: boardId,
+                userEmail: currentUser.userEmail,
+                commentContent: comment,
+                commentUserProfile: currentUser.userProfile,
+                commentUserNickname: currentUser.userNickname,
+            };
+
+            const response = await axios.post(`/board/${boardId}/comments`, commentData);
+            setComments([...comments, response.data]);
+            setComment('');
         } catch (error) {
             console.error("Error posting comment:", error);
         }
     };
+
 
     return (
         <Container maxWidth="md">
@@ -120,16 +139,34 @@ const BoardDetail = () => {
                 </Box>
             </Box>
             <Divider style={{ marginTop: '20px', marginBottom: '20px' }} />
-            <Typography variant="h5">댓글</Typography>
+            <Typography variant="h5" style={{ marginBottom: '15px' }}>
+                댓글 ({comments.length})
+            </Typography>
             <Box>
                 {comments.map((comment, index) => (
-                    <Box key={index} style={{ marginBottom: '10px' }}>
-                        <Typography variant="subtitle1">{comment.user}</Typography>
-                        <Typography variant="body2">{comment.text}</Typography>
+                    <Box key={index} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
+                        {comment.commentUserProfile ? (
+                            <Avatar src={comment.commentUserProfile} alt="Profile" style={{ marginRight: '10px' }} />
+                        ) : (
+                            <Box style={{ width: 40, height: 40, marginRight: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Typography>No Image</Typography>
+                            </Box>
+                        )}
+                        <Typography variant="subtitle1" style={{ marginRight: '15px' }}>
+                            {comment.commentUserNickname}
+                        </Typography>
+                        <Typography variant="body2">
+                            {comment.commentContent}
+                        </Typography>
+                        <Box style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                            <Typography variant="caption" color="textSecondary" style={{ marginLeft: '15px' }}>
+                                {new Date(comment.commentWriteDate).toLocaleString()}
+                            </Typography>
+                        </Box>
                     </Box>
                 ))}
             </Box>
-            <Grid container spacing={2} alignItems="center">
+            <Grid container spacing={2} mt={3} alignItems="center">
                 <Grid item xs={10}>
                     <TextField
                         fullWidth

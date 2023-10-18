@@ -89,25 +89,26 @@ const BoardList = () => {
                         <TableCell>글번호</TableCell>
                         <TableCell>제목</TableCell>
                         <TableCell>작성자</TableCell>
-                        <TableCell>프로필사진</TableCell>
                         <TableCell>작성 날짜</TableCell>
                         <TableCell>조회수</TableCell> {/* 조회수 헤더 추가 */}
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {currentPosts.map(board => ( // 주의: currentPosts로 변경해야 합니다.
+                    {currentPosts.map(board => (
                         <TableRow key={board.boardNumber}>
                             <TableCell>{board.boardNumber}</TableCell>
                             <TableCell>
                                 <Button onClick={() => handleTitleClick(board)}>{board.boardTitle}</Button>
                             </TableCell>
-                            <TableCell>{board.boardWriterNickname}</TableCell>
                             <TableCell>
-                                {board.boardWriterProfile ? (
-                                    <Avatar src={board.boardWriterProfile} alt="Profile" />
-                                ) : (
-                                    <Typography>No Image</Typography>
-                                )}
+                                <Box display="flex" alignItems="center">
+                                    {board.boardWriterProfile ? (
+                                        <Avatar src={board.boardWriterProfile} alt="Profile" style={{ marginRight: '10px' }} />
+                                    ) : (
+                                        <Typography style={{ marginRight: '10px' }}>No Image</Typography>
+                                    )}
+                                    <Typography>{board.boardWriterNickname}</Typography>
+                                </Box>
                             </TableCell>
                             <TableCell>{board.boardWriteDate}</TableCell>
                             <TableCell>{board.boardClickCount}</TableCell>

@@ -5,7 +5,7 @@ export default function ProjectMain(){
     return (
         <>
             <div>
-                <img alt="BeWithYouMainOrigin" src="/img/img/BeWithYouMainOrigin.png" width='100%' style={{margin: '10px 0px 0px 0px'}}/>
+                <img alt="BeWithYouIllerst" src="/img/img/BeWithYouIllerst.png" width='100%' style={{margin: '10px 0px 0px 0px'}}/>
                 <img alt="introMaythe4th" src="/img/img/introMaythe4th.png" width='100%'/>
                 <img alt="introBeWithYou" src="/img/img/introBeWithYou.png" width='100%'/>
                 <NewsList />

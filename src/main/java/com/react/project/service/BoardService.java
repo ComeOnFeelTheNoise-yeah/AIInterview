@@ -1,73 +1,59 @@
 package com.react.project.service;
 
-import com.react.project.dto.ResponseDto;
+import com.react.project.dto.BoardDto;
 import com.react.project.entity.BoardEntity;
-import com.react.project.entity.PopularSearchEntity;
 import com.react.project.repository.BoardRepository;
-import com.react.project.repository.PopularSearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BoardService {
+
     @Autowired
-    BoardRepository boardRepository;
-    @Autowired
-    PopularSearchRepository popularSearchRepository;
+    private BoardRepository boardRepository;
 
-    public ResponseDto<List<BoardEntity>> getTop3(){
-        List<BoardEntity> boardList = new ArrayList<BoardEntity>();
-        Timestamp date = Timestamp.from(Instant.now().minus(7, ChronoUnit.DAYS));
-
-        try{
-            boardList = boardRepository.findTop3ByBoardWriterDateAfterOrderByBoardLikesCountDesc(String.valueOf(date));
-        }catch(Exception exception){
-            exception.printStackTrace();
-            return ResponseDto.setFailed("Database Error");
-        }
-        return ResponseDto.setSuccess("Success", boardList);
+    public List<BoardEntity> getAllBoards() {
+        return boardRepository.findAll();
     }
 
-    public ResponseDto<List<BoardEntity>> getList(){
-        List<BoardEntity> boardList = new ArrayList<BoardEntity>();
-
-        try{
-            boardList = boardRepository.findByOrderByBoardWriterDateDesc();
-        }catch (Exception exception){
-            exception.printStackTrace();
-            return ResponseDto.setFailed("Database Error");
-        }
-        return ResponseDto.setSuccess("Success", boardList);
+    public Optional<BoardEntity> getBoardById(int id) {
+        return boardRepository.findById(id);
     }
 
-    public ResponseDto<List<PopularSearchEntity>> getPopularSearchList(){
-        List<PopularSearchEntity> popularSearchList = new ArrayList<PopularSearchEntity>();
-
-        try{
-            popularSearchList = popularSearchRepository.findByOrderByPopularSearchCountDesc();
-        }catch (Exception exception){
-            exception.printStackTrace();
-            return ResponseDto.setFailed("Database Error");
-        }
-        return ResponseDto.setSuccess("Success", popularSearchList);
+    public BoardEntity saveBoard(BoardEntity board) {
+        return boardRepository.save(board);
     }
 
-    public ResponseDto<List<BoardEntity>> getSearchList(String boardTitle){
-        List<BoardEntity> boardList = new ArrayList<BoardEntity>();
-
-        try{
-            boardList = boardRepository.findByBoardTitleContains(boardTitle);
-        }catch (Exception exception){
-            exception.printStackTrace();
-            return ResponseDto.setFailed("Database Error");
-        }
-
-        return ResponseDto.setSuccess("Success", boardList);
+    public void deleteBoard(int id) {
+        boardRepository.deleteById(id);
     }
+
+    public void createPost(BoardDto boardDto) {
+        BoardEntity board = new BoardEntity();
+        board.setBoardTitle(boardDto.getBoardTitle());
+        board.setBoardContent(boardDto.getBoardContent());
+        board.setBoardWriterEmail(boardDto.getBoardWriterEmail());
+        board.setBoardWriterNickname(boardDto.getBoardWriterNickname());
+        board.setBoardWriterProfile(boardDto.getBoardWriterProfile());
+        board.setBoardWriteDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))); // 현재 시간 설정
+        board.setBoardImage(boardDto.getBoardImage());
+        boardRepository.save(board);
+    }
+
+    public void incrementViewCount(int id) {
+        BoardEntity board = boardRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Board not found!"));
+        board.setBoardClickCount(board.getBoardClickCount() + 1);
+        boardRepository.save(board);
+    }
+
+    public Optional<BoardEntity> getBoardEntityById(int id) {
+        return boardRepository.findById(id);
+    }
+
 }

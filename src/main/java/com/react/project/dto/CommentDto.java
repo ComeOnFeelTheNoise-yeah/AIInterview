@@ -1,27 +1,19 @@
-package com.react.project.entity;
+package com.react.project.dto;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Comment")
-@Table(name = "Comment")
-public class CommentEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CommentDto {
     private int commentId;
     private int boardNumber;
     private String userEmail;
     private String commentContent;
     private String commentUserProfile;
     private String commentUserNickname;
-    private LocalDateTime commentWriteDate;
+    private String commentWriteDate;
+
 }

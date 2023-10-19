@@ -24,9 +24,23 @@ const BoardList = () => {
     const postsPerPage = 10;
 
     useEffect(() => {
-        axios.get('/board').then(response => {
-            setBoards(response.data);
-        });
+        const fetchBoardsAndComments = async () => {
+            try {
+                const boardResponse = await axios.get('/board');
+                const boardsWithComments = await Promise.all(boardResponse.data.map(async board => {
+                    const commentResponse = await axios.get(`/board/${board.boardNumber}/comments`);
+                    return {
+                        ...board,
+                        commentCount: commentResponse.data.length
+                    };
+                }));
+                setBoards(boardsWithComments);
+            } catch (error) {
+                console.error("Error fetching boards and comment counts:", error);
+            }
+        };
+
+        fetchBoardsAndComments();
 
         const fetchUserData = async () => {
             const token = cookies.token;
@@ -98,7 +112,12 @@ const BoardList = () => {
                         <TableRow key={board.boardNumber}>
                             <TableCell>{board.boardNumber}</TableCell>
                             <TableCell>
-                                <Button onClick={() => handleTitleClick(board)}>{board.boardTitle}</Button>
+                                <Button onClick={() => handleTitleClick(board)}>
+                                    {board.boardTitle}
+                                    <span style={{marginLeft: '10px', color: 'grey'}}>
+                                        ({board.commentCount})
+                                    </span>
+                                </Button>
                             </TableCell>
                             <TableCell>
                                 <Box display="flex" alignItems="center">

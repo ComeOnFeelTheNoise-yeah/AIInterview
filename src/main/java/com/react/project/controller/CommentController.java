@@ -32,7 +32,6 @@ public class CommentController {
 
     @PostMapping("/comments")
     public ResponseEntity<CommentDto> addComment(@PathVariable int boardId, @RequestBody CommentDto commentDto) {
-        System.out.println(commentDto);
         CommentEntity comment = modelMapper.map(commentDto, CommentEntity.class);
         comment.setBoardNumber(boardId);
         CommentEntity savedComment = commentService.save(comment);

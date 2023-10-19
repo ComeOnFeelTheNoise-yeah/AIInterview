@@ -95,13 +95,25 @@ const BoardDetail = () => {
 
 
     return (
-        <Container maxWidth="md">
-            <Box my={4}>
+        <Container
+            maxWidth="md"
+            style={{
+                border: '1px solid #e0e0e0',
+                borderRadius: '15px',
+                padding: '20px',
+                marginTop: '150px',
+                marginBottom: '50px',
+                boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)',
+                backgroundColor: 'white',
+                paddingBottom: '40px'
+            }}
+        >
+            <Box mb={4}>
                 <Typography variant="h4" gutterBottom>
                     {boardDetail.boardTitle}
                 </Typography>
                 <Divider />
-                <Box my={2}>
+                <Box my={2} display="flex" flexDirection="column" alignItems="start">
                     <Typography variant="subtitle1" color="textSecondary">
                         작성자: {boardDetail.boardWriterNickname}
                     </Typography>
@@ -109,15 +121,17 @@ const BoardDetail = () => {
                         작성 날짜: {boardDetail.boardWriteDate}
                     </Typography>
                 </Box>
-                <Typography variant="body1">
-                    {boardDetail.boardContent}
-                </Typography>
+                <Box mt={5} mb={5}>
+                    <Typography variant="body1">
+                        {boardDetail.boardContent}
+                    </Typography>
+                </Box>
                 {boardDetail.boardImage && (
-                    <Box my={2}>
+                    <Box my={4}>
                         <img
                             src={boardDetail.boardImage}
                             alt="Board Image"
-                            style={{ width: '100%', maxHeight: 500, objectFit: 'cover' }}
+                            style={{ width: '100%', maxHeight: 500, objectFit: 'cover', borderRadius: '10px' }}
                         />
                     </Box>
                 )}
@@ -138,50 +152,54 @@ const BoardDetail = () => {
                     </Button>
                 </Box>
             </Box>
+
             <Divider style={{ marginTop: '20px', marginBottom: '20px' }} />
-            <Typography variant="h5" style={{ marginBottom: '15px' }}>
-                댓글 ({comments.length})
-            </Typography>
-            <Box>
-                {comments.map((comment, index) => (
-                    <Box key={index} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-                        {comment.commentUserProfile ? (
-                            <Avatar src={comment.commentUserProfile} alt="Profile" style={{ marginRight: '10px' }} />
-                        ) : (
-                            <Box style={{ width: 40, height: 40, marginRight: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Typography>No Image</Typography>
-                            </Box>
-                        )}
-                        <Typography variant="subtitle1" style={{ marginRight: '15px' }}>
-                            {comment.commentUserNickname}
-                        </Typography>
-                        <Typography variant="body2">
-                            {comment.commentContent}
-                        </Typography>
-                        <Box style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                            <Typography variant="caption" color="textSecondary" style={{ marginLeft: '15px' }}>
-                                {new Date(comment.commentWriteDate).toLocaleString()}
+
+            <Box mt={5}>
+                <Typography variant="h5" style={{ marginBottom: '15px' }}>
+                    댓글 ({comments.length})
+                </Typography>
+                <Box>
+                    {comments.map((comment, index) => (
+                        <Box key={index} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
+                            {comment.commentUserProfile ? (
+                                <Avatar src={comment.commentUserProfile} alt="Profile" style={{ marginRight: '10px' }} />
+                            ) : (
+                                <Box style={{ width: 40, height: 40, marginRight: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <Typography>No Image</Typography>
+                                </Box>
+                            )}
+                            <Typography variant="subtitle1" style={{ marginRight: '15px' }}>
+                                {comment.commentUserNickname}
                             </Typography>
+                            <Typography variant="body2">
+                                {comment.commentContent}
+                            </Typography>
+                            <Box style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                                <Typography variant="caption" color="textSecondary" style={{ marginLeft: '15px' }}>
+                                    {new Date(comment.commentWriteDate).toLocaleString()}
+                                </Typography>
+                            </Box>
                         </Box>
-                    </Box>
-                ))}
+                    ))}
+                </Box>
+                <Grid container spacing={2} mt={3} alignItems="center">
+                    <Grid item xs={10}>
+                        <TextField
+                            fullWidth
+                            label="댓글 작성"
+                            variant="outlined"
+                            value={comment}
+                            onChange={e => setComment(e.target.value)}
+                        />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Button variant="contained" onClick={handlePostComment}>
+                            댓글 등록
+                        </Button>
+                    </Grid>
+                </Grid>
             </Box>
-            <Grid container spacing={2} mt={3} alignItems="center">
-                <Grid item xs={10}>
-                    <TextField
-                        fullWidth
-                        label="댓글 작성"
-                        variant="outlined"
-                        value={comment}
-                        onChange={e => setComment(e.target.value)}
-                    />
-                </Grid>
-                <Grid item xs={2}>
-                    <Button variant="contained" onClick={handlePostComment}>
-                        댓글 등록
-                    </Button>
-                </Grid>
-            </Grid>
         </Container>
     );
 }

@@ -153,37 +153,6 @@ public class AnalysisService {
         return text;
     }
 
-    public String checkSpellingWithHanspell(String text) {
-        String apiUrl = "http://localhost:5000/check_spelling";
-
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        JSONObject requestBody = new JSONObject();
-        requestBody.put("text", text);
-
-        HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, entity, String.class);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            String responseBody = response.getBody();
-            JSONParser parser = new JSONParser();
-            try {
-                JSONObject jsonResponse = (JSONObject) parser.parse(responseBody);
-                return (String) jsonResponse.get("corrected_text");
-            } catch (ParseException e) {
-                e.printStackTrace();
-                System.out.println("Error parsing the response JSON: " + responseBody);
-                return null;
-            }
-        } else {
-            // API 호출 오류 처리
-            System.out.println("Error calling the Hanspell service: " + response.getStatusCode());
-            return null;
-        }
-    }
-
     public String checkSpellingWithGPT(String text) {
         OpenAIApi openai = new OpenAIApi();
         String prompt = text + "이 텍스트에서 맞춤법 검사해서 고칠 점만 말해줘";

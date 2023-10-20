@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {Container, Typography, Divider, Box, Button, TextField, Grid} from '@mui/material';
 import { useCookies } from "react-cookie";
 import Avatar from "@mui/material/Avatar";
+import community from "../../assets/images/communication_bg.png";
 
 const BoardDetail = () => {
     const [boardDetail, setBoardDetail] = useState({});
@@ -95,14 +96,23 @@ const BoardDetail = () => {
 
 
     return (
+        <div
+             style={{
+                 backgroundImage: `url(${community})`,
+                 backgroundPosition: 'center',
+                 backgroundSize: 'cover',
+                 backgroundRepeat: 'no-repeat',
+                 width: '100vw',
+                 minHeight: 'calc(100vh + 50px)',
+                 marginTop:"-5%",
+                 paddingBottom: "3%"}}>
+            <div style={{ paddingTop: '150px' }}>
         <Container
             maxWidth="md"
             style={{
                 border: '1px solid #e0e0e0',
                 borderRadius: '15px',
                 padding: '20px',
-                marginTop: '150px',
-                marginBottom: '50px',
                 boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)',
                 backgroundColor: 'white',
                 paddingBottom: '40px'
@@ -201,6 +211,8 @@ const BoardDetail = () => {
                 </Grid>
             </Box>
         </Container>
+            </div>
+        </div>
     );
 }
 

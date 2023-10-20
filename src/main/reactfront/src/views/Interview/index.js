@@ -38,6 +38,7 @@ export default function Interview() {
     const [isLoading, setIsLoading] = useState(false);
     const [interviewInProgress, setInterviewInProgress] = useState(false);
     const [gptResponse, setGptResponse] = useState(''); // GPT 응답을 저장할 상태
+    const [gptResult, setGptResult] = useState('');
     const [showImage, setShowImage] = useState(false);
     const [problems, setProblems] = useState([]); // 문제 목록 상태 추가
     const [currentProblemIndex, setCurrentProblemIndex] = useState(0);

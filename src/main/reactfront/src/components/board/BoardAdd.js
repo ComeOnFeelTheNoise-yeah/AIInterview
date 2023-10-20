@@ -3,6 +3,7 @@ import axios from 'axios';
 import {Box, Button, TextField, Typography, Avatar, Container, Paper} from '@mui/material';
 import { useCookies } from "react-cookie";
 import { useNavigate } from 'react-router-dom';
+import community from "../../assets/images/communication_bg.png";
 
 const BoardAdd = () => {
     const [cookies] = useCookies(['token']);
@@ -90,7 +91,17 @@ const BoardAdd = () => {
     };
 
     return (
-        <Container style={{ maxWidth: '800px', marginTop: '150px' }}>
+        <div align="center"
+             style={{backgroundImage: `url(${community})`,
+                 backgroundPosition: 'center',
+                 backgroundSize: 'cover',
+                 backgroundRepeat: 'no-repeat',
+                 width: '100vw',
+                 minHeight: 'calc(100vh + 50px)',
+                 marginTop:"-5%",
+                 paddingBottom: "3%"}}>
+            <div style={{ paddingTop: '150px' }}>
+        <Container style={{ maxWidth: '800px' }}>
             <Paper elevation={3} style={{ padding: '20px', borderRadius: '8px' }}>
                 <Typography variant="h5" gutterBottom align="center">
                     글 작성
@@ -144,6 +155,8 @@ const BoardAdd = () => {
                 </Box>
             </Paper>
         </Container>
+            </div>
+        </div>
     );
 }
 

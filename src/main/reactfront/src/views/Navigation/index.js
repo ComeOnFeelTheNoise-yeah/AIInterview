@@ -124,7 +124,6 @@ export default function Navigation() {
                             <Link
                                 to="/analysis"
                                 style={{ textDecoration: 'none', color: 'inherit' }}
-                                onClick={premiumOnlyHandler} // 클릭 핸들러 추가
                             >
                                 <Typography variant="h6" fontWeight="bold">
                                     자소서 분석

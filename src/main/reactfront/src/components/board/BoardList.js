@@ -14,6 +14,7 @@ import {
     Typography,
     Box, Paper
 } from '@mui/material';
+import community from "../../assets/images/communication_bg.png";
 
 const BoardList = () => {
     const [boards, setBoards] = useState([]);
@@ -88,11 +89,20 @@ const BoardList = () => {
     };
 
     return (
+        <div align="center"
+             style={{backgroundImage: `url(${community})`,
+                 backgroundPosition: 'center',
+                 backgroundSize: 'cover',
+                 backgroundRepeat: 'no-repeat',
+                 width: '100vw',
+                 minHeight: 'calc(100vh + 50px)',
+                 marginTop:"-5%",
+                 paddingBottom: "3%"}}>
+            <div style={{ paddingTop: '150px' }}>
         <Container maxWidth="md" style={{
             border: '1px solid #e0e0e0',
             borderRadius: '15px',
             padding: '20px',
-            marginTop: '150px',
             boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)', // 그림자 추가
             backgroundColor: 'white' // 배경색 추가
         }}>
@@ -162,6 +172,8 @@ const BoardList = () => {
                 <Button onClick={nextPage} disabled={currentPage === totalPages}>Next</Button>
             </Box>
         </Container>
+            </div>
+        </div>
     );
 }
 

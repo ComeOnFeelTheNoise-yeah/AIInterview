@@ -17,6 +17,8 @@ import axios from "axios";
 import ChatQuestion from "../../components/ChatQuestion";
 import interviewImage from '../../assets/images/interview_bg.gif';
 import LoadingInterview from "../../components/LoadingInterview";
+import QuestionCheck from "../../components/QuestionCheck";
+import LoadingAnalyze from "../../components/LoadingAnalyze";
 
 const TextToSpeech = ({ textToRead }) => {
     const playTextToSpeech = () => {
@@ -47,6 +49,7 @@ export default function Interview() {
     const [listening, setListening] = useState(false);
     const [recordedText, setRecordedText] = useState([]); // 음성 인식 결과를 저장할 배열 추가
     const [interviewCompleted, setInterviewCompleted] = useState(false); // 면접 완료 여부를 추적하는 상태 추가
+    const [interviewResult, setInterviewResult] = useState('');
 
     const videoRef = useRef(null);
     const [openSelectDialog, setOpenSelectDialog] = useState(false);
@@ -137,6 +140,15 @@ export default function Interview() {
         }
     };
 
+    const handleGptResult = (response) => {
+        setGptResult(response);
+        setGptResponsesReceived(prevCount => prevCount + 1); // GPT 응답 횟수 증가
+
+        if (gptResponsesReceived === 1) {
+            setGptResponsesReceived(0);
+        }
+    };
+
     const extractProblems = (text) => {
         const problemRegex = /\d+\.\s(.*?)(?=\d+\.\s|$)/gs;
         const matches = text.match(problemRegex);
@@ -213,6 +225,17 @@ export default function Interview() {
         setInterviewCompleted(true);
         setInterviewInProgress(false);
         setCurrentProblemIndex(0);
+
+        // 면접 답변을 하나의 텍스트로 합칩니다.
+        const interviewResponses = problems.map((problem, index) => {
+            const question = `질문 ${problem.number}: ${problem.content}`;
+            const answer = recordedText[index] || '대답 없음'; // 대답이 없을 경우 대신 '대답 없음'으로 표시
+            return `${question}\n${answer}`;
+        });
+
+        // 면접 답변을 하나의 텍스트로 합친 결과를 저장합니다.
+        const interviewResponsesText = interviewResponses.join('\n\n');
+        setInterviewResult(interviewResponsesText);
     };
 
     useEffect(() => {
@@ -485,7 +508,7 @@ export default function Interview() {
                         <div>
                             {interviewInProgress ? (
                                 <div>
-                                    <div style={{ textAlign: 'center', width: '100%' }}> {/* 중앙 정렬을 위한 스타일 추가 */}
+                                    <div style={{ textAlign: 'center', width: '100%' }}>
                                         <Typography variant="h5" align="center" style={{ color: '#333', fontWeight: 600 }}>
                                             면접
                                         </Typography>
@@ -526,6 +549,12 @@ export default function Interview() {
                             ) : null}
 
                             {interviewCompleted && (
+                                <div style={{ display: 'none' }}>
+                                    <QuestionCheck introContent={interviewResult} onGptResponse={handleGptResult} />
+                                </div>
+                            )}
+
+                            {gptResult ? (
                                 <Container maxWidth="md" style={{ marginTop: '10px' }}>
                                     <Stack direction="row">
                                         <Button
@@ -543,7 +572,7 @@ export default function Interview() {
                                     </Stack>
 
                                     {activeTab === 'interviewRecord' ? (
-                                        <Paper elevation={3} style={{ padding: '30px' }}>
+                                        <Paper elevation={3} style={{ padding: '30px', marginBottom: '30px' }}>
                                             <Typography variant="h4" align="center" gutterBottom>
                                                 면접 완료
                                             </Typography>
@@ -572,7 +601,7 @@ export default function Interview() {
                                             </Typography>
                                         </Paper>
                                     ) : (
-                                        <Paper elevation={3} style={{ padding: '30px' }}>
+                                        <Paper elevation={3} style={{ padding: '30px', marginBottom: '30px' }}>
                                             <Typography variant="h4" align="center" gutterBottom>
                                                 면접 완료
                                             </Typography>
@@ -581,7 +610,7 @@ export default function Interview() {
                                                 대답 분석
                                             </Typography>
                                             <Typography variant="h7" style={{ marginTop: '100px', marginBottom: '20px', color: '#333', fontWeight: 600 }}>
-                                                ※대답이 없으면 분석이 진행되지 않습니다.
+                                                ※대답한 질문에 대해서 분석이 진행됩니다.
                                                 <br />
                                             </Typography>
                                             <List>
@@ -594,23 +623,30 @@ export default function Interview() {
                                                             <ListItem>
                                                                 <ListItemText primary={`대답: ${recordedText[index]}`} />
                                                             </ListItem>
-                                                            {sentiments[index] && (
-                                                                <ListItem>
-                                                                    <ListItemText primary={`감정 분석 결과: ${sentiments[index].result}`}/>
-                                                                </ListItem>
-                                                            )}
                                                         </div>
                                                     ) : null
                                                 ))}
                                             </List>
-                                            <Typography variant="h7" style={{ marginTop: '100px', marginBottom: '20px', color: '#333', fontWeight: 600 }}>
-                                                ※본 분석 기록은 저장되지 않습니다.
-                                                <br />
-                                                ※필요시 화면 캡쳐 부탁드립니다.
+                                            <Typography variant="h6" style={{ marginTop: '30px', color: '#333', fontWeight: 700 }}>
+                                                ⟦종합 분석 결과⟧
                                             </Typography>
+                                            <Box padding="20px" border="1px solid #666" borderRadius="10px" backgroundColor="#f5f5f5">
+                                                <Typography variant="h6" style={{ color: '#444', fontWeight: 500 }}>
+                                                    {gptResult}
+                                                </Typography>
+                                            </Box>
+                                            <Box marginTop="35px">
+                                                <Typography variant="h7" style={{ marginBottom: '20px', color: '#333', fontWeight: 600 }}>
+                                                    ※본 분석 기록은 저장되지 않습니다.
+                                                    <br />
+                                                    ※필요시 화면 캡쳐 부탁드립니다.
+                                                </Typography>
+                                            </Box>
                                         </Paper>
                                     )}
                                 </Container>
+                            ) : (
+                                <LoadingAnalyze/>
                             )}
                         </div>
                     )}

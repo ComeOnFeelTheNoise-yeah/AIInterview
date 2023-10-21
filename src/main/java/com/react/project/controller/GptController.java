@@ -24,4 +24,9 @@ public class GptController {
         return gptService.question(prompt);
     }
 
+    @PostMapping("/analysisAnswer")
+    public String analysisAnswer(@RequestBody String prompt){
+        return gptService.analysisAnswer(prompt);
+    }
+
 }

@@ -5,7 +5,7 @@ import ChatInput from "./ChatInput";
 import {useCookies} from "react-cookie";
 import {useUserStore} from "../stores";
 
-const ChatQuestion = ({ introContent, onGptResponse }) => {
+const QuestionCheck = ({ introContent, onGptResponse }) => {
     const [messages, setMessages] = useState([]);
     const [projectResponse, setProjectResponse] = useState('');
     const [cookies] = useCookies();
@@ -26,12 +26,9 @@ const ChatQuestion = ({ introContent, onGptResponse }) => {
     useEffect(() => {
         // 컴포넌트가 마운트될 때 GPT에 자소서를 보냄
         const sendIntroToGPT = async () => {
-            if (introContent && introContent.length > 0) {
-                // 자소서의 모든 항목을 하나의 문자열로 합칩니다.
-                const combinedContent = introContent.map(item => item.answer).join('\n\n');
-
+            if (introContent && typeof introContent === 'string') { // 문자열인지 확인
                 try {
-                    await axios.post("http://localhost:8080/question", { prompt: combinedContent }, {
+                    await axios.post("http://localhost:8080/analysisAnswer", { prompt: introContent }, {
                         headers: {
                             'Authorization': 'Bearer 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',
                         }
@@ -64,7 +61,7 @@ const ChatQuestion = ({ introContent, onGptResponse }) => {
         addMessage(message, true);
 
         try {
-            const response = await axios.post("http://localhost:8080/question", { prompt: message }, {
+            const response = await axios.post("http://localhost:8080/analysisAnswer", { prompt: message }, {
                 headers: {
                     'Authorization': 'Bearer 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',
                 }
@@ -82,7 +79,7 @@ const ChatQuestion = ({ introContent, onGptResponse }) => {
 
     useEffect(() => {
         if (isLoaded) {
-            const automaticMessage = '모의면접 질문 10문제 목록 만들어줘 질문에 대한 답변 없이';
+            const automaticMessage = introContent + '이게 내가 진행한 면접 질문이랑 답변인데 답변에서 고칠점이랑 잘한 점 등을 분석해줘';
             handleSubmit(automaticMessage);
         }
     }, [isLoaded]);
@@ -109,4 +106,4 @@ const ChatQuestion = ({ introContent, onGptResponse }) => {
     );
 };
 
-export default ChatQuestion;
+export default QuestionCheck;

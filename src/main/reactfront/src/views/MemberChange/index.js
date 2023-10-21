@@ -186,7 +186,6 @@ export default function MemberChange() {
                 alert("사용자 정보 수정 중 오류가 발생했습니다.");
             }
         } catch (error) {
-            console.error("Error updating user info:", error);
             alert("사용자 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
     };

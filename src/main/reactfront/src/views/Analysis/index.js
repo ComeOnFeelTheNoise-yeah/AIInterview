@@ -139,7 +139,6 @@ function Analysis() {
                 if (spellingCheckResponse.data && spellingCheckResponse.data.corrected_text) {
                     correctedTextAccumulator.push(spellingCheckResponse.data.corrected_text);
                 } else {
-                    console.error("API did not return the expected 'corrected_text' property for question-answer pair " + (i + 1));
                     correctedTextAccumulator.push("Error: Could not fetch corrected text");
                 }
             }
@@ -169,7 +168,6 @@ function Analysis() {
             setSpellingCheckResult(correctedTextAccumulator);
             setView('result');
         } catch (error) {
-            console.error("Error checking plagiarism or spelling:", error);
             setView('write');
         }
     };

@@ -4,9 +4,6 @@ import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import {useCookies} from "react-cookie";
 import {useUserStore} from "../stores";
-import Navigation from "../views/Navigation";
-import ProjectMain from "../views/ProjectMain";
-import Authentication from "../views/Authentication";
 
 const ChatWindow = ({ introContent }) => {
     const [messages, setMessages] = useState([]);

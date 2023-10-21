@@ -48,7 +48,7 @@ export default function InfoWrite() {
                 setTitle(selectedTitle);
                 setQuestions(loadedQuestions);
                 setAnswers(loadedAnswers);
-                setOpenDialog(false);  // 팝업창 닫기
+                setOpenDialog(false);
             }
         } catch (error) {
             console.error("Error loading introduce content:", error);
@@ -75,7 +75,6 @@ export default function InfoWrite() {
     };
 
     useEffect(() => {
-        // 현재 사용자의 이메일을 가져오는 함수
         const fetchUserEmail = async () => {
             const token = cookies.token;
 

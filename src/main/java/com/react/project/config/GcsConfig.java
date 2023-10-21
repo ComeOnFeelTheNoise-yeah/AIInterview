@@ -38,7 +38,6 @@ public class GcsConfig {
             BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
 
             Blob blob = storage.create(blobInfo, file.getBytes());
-            logger.info("Media Link: " + blob.getMediaLink());
             if (blob != null) {
                 return blob.getMediaLink();
             }

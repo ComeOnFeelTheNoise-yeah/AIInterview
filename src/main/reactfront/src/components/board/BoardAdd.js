@@ -83,7 +83,6 @@ const BoardAdd = () => {
                 setErrorMessage('게시글 작성 중 오류가 발생했습니다.');
             }
         } catch (error) {
-            console.error("Error creating post:", error);
             setErrorMessage('게시글 작성 중 오류가 발생했습니다.');
         } finally {
             setIsLoading(false);

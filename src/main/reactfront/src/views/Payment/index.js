@@ -89,15 +89,10 @@ export default function Payment(){
             order_id: `premium${duration}`, //고유 주문번호로, 생성하신 값을 보내주셔야 합니다.
         }).error(function (data) {
             alert("결제가 취소되었습니다")
-            console.log(data);
         }).cancel(function (data) {
             alert("결제가 취소되었습니다")
-            console.log(data);
         }).ready(function (data) {
-            // 가상계좌 입금 계좌번호가 발급되면 호출되는 함수.
-            console.log(data);
         }).confirm(function (data) {
-            console.log(data);
             var enable = true; // 재고 수량 관리 로직 혹은 다른 처리
             if (enable) {
                 BootPay.transactionConfirm(data); // 조건이 맞으면 승인 처리를 한다.
@@ -105,24 +100,19 @@ export default function Payment(){
                 BootPay.removePaymentWindow(); // 조건이 맞지 않으면 결제 창을 닫고 결제를 승인하지 않는다.
             }
         }).close(function (data) {
-            // 결제창이 닫힐때 수행됩니다. (성공,실패,취소에 상관없이 모두 수행됨)
-            console.log(data);
         }).done(function (data) {
             alert("결제가 완료되었습니다");
             document.dispatchEvent(new Event('paymentSuccess'));
-            console.log(data);
 
             axios.post('/api/save-payment', {
                 userEmail: userEmail,
                 days: duration
             })
                 .then(response => {
-                    console.log("Payment data saved:", response.data);
                     updateRemainingDays();
                     navigate('/');
                 })
                 .catch(error => {
-                    console.error("Error saving payment data:", error);
                 });
         });
     };
@@ -174,10 +164,11 @@ export default function Payment(){
                             <h4 style={{color:"#ffffff", marginTop:"-2px"}}> Be With You 프리미엄 서비스가 시작되었습니다. </h4>
                             <h5 style={{color:"#1c1c1c", marginBottom:"-2px"}}> 남은 이용일 수 : {remainingDays}일 </h5>
                             <h5 style={{color:"#1c1c1c", marginTop:"-2px"}}>{remainingDays > 0 ? `이용 만료 예정일: ${endDate.toLocaleDateString()}` : "이용권이 없습니다"}</h5>
-                            <h5 style={{color:"#1c1c1c", marginTop:"-3px"}}> 프리미엄 서비스 이용시 누릴 수 있는 혜택 :
-                                특별한 자소서 분석,
-                                기업별 자소서 항목,
-                                면접 예상대답 챗봇</h5>
+                            <h5 style={{color:"#1c1c1c", marginTop:"-3px"}}> 프리미엄 서비스 이용시 누릴 수 있는 혜택
+                                <br/><br/>
+                                가상 면접관과 함께하는 모의 면접,
+                                <br/>
+                                예상 질문을 통한 예시 대답 챗봇</h5>
                             <br/>
                         </p>
                         <PricingTable highlightColor="#1976D2">

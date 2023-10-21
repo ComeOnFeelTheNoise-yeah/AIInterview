@@ -265,7 +265,6 @@ public class AnalysisService {
 
         // API 요청
         ResponseEntity<String> response = restTemplate.exchange(CLOVA_API_URL, HttpMethod.POST, entity, String.class);
-        System.out.println("Response from CLOVA: " + response.getBody());
 
         // 응답 본문 반환
         return response.getBody();

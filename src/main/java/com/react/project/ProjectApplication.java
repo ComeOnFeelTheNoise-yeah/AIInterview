@@ -11,18 +11,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication(exclude = {UserDetailsServiceAutoConfiguration.class})
 public class ProjectApplication {
-//implements CommandLineRunner
-//	@Autowired
-//	private CsvLoader csvLoader;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProjectApplication.class, args);
 	}
-
-//	@Override
-//	public void run(String... args) throws Exception {
-//		csvLoader.loadCsvAndSave();
-//	}
 
 	@Bean
 	public WebMvcConfigurer corsConfigurer(){

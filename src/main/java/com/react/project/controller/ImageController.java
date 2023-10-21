@@ -25,7 +25,6 @@ public class ImageController {
     public ResponseEntity<?> uploadProfileImage(@RequestParam("profileImage") MultipartFile file) {
         try {
             if (file.isEmpty()) {
-                logger.warn("Received empty file for upload");
                 return ResponseEntity.badRequest().body("File cannot be empty");
             }
             String imageUrl = imageService.uploadImage(file);

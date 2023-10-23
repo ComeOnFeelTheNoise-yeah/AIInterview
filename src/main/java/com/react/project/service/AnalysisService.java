@@ -124,14 +124,14 @@ public class AnalysisService {
 
             IndexReader reader = DirectoryReader.open(directory);
             IndexSearcher searcher = new IndexSearcher(reader);
-            searcher.setSimilarity(new ClassicSimilarity()); // Use TF-IDF
+            searcher.setSimilarity(new ClassicSimilarity());
 
             QueryParser parser = new QueryParser("content", analyzer);
             Query query = parser.parse(escapeSpecialChars(text2));
-            TopDocs results = searcher.search(query, 2); // Search for top 2 documents
+            TopDocs results = searcher.search(query, 2);
 
             if (results.totalHits.value >= 1) {
-                return results.scoreDocs[0].score; // Return the similarity score of the top document
+                return results.scoreDocs[0].score;
             }
         } catch (Exception e) {
             e.printStackTrace();

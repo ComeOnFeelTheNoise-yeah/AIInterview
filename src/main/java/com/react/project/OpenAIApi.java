@@ -10,7 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class OpenAIApi {
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "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";
 
     public String ask(String prompt){
         String responeBody = "";
@@ -22,9 +22,9 @@ public class OpenAIApi {
 
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("messages", messages);
-        jsonBody.put("max_tokens", 500);
+        jsonBody.put("max_tokens", 1000);
         jsonBody.put("temperature", 0.8);
-        jsonBody.put("model", "gpt-3.5-turbo");
+        jsonBody.put("model", "gpt-4");
 
         try{
             HttpClient client = HttpClient.newHttpClient();
@@ -45,6 +45,39 @@ public class OpenAIApi {
         return responeBody;
     }
 
+    public String askAnalysis(String prompt){
+        String responeBody = "";
+
+        JSONArray messages = new JSONArray();
+        messages.put(new JSONObject().put("role", "system").put("content", "You are a helpful assistant."));
+        messages.put(new JSONObject().put("role", "user").put("content", prompt));
+
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("messages", messages);
+        jsonBody.put("max_tokens", 500);
+        jsonBody.put("temperature", 0.8);
+        jsonBody.put("model", "gpt-4");
+
+        try{
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.openai.com/v1/chat/completions"))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + API_KEY)
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody.toString()))
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            responeBody = extractAnswer(response.body());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return responeBody;
+    }
+
+
     private String extractAnswer(String responseJson){
         JSONObject jsonObject = new JSONObject(responseJson);
 
@@ -64,5 +97,71 @@ public class OpenAIApi {
             System.out.println("Error: 'choices' key not found in response: " + responseJson);
         }
         return "API 호출 중 오류가 발생했습니다. ";
+    }
+
+    public String question(String prompt){
+        String responeBody = "";
+
+        JSONArray messages = new JSONArray();
+        messages.put(new JSONObject().put("role", "system").put("content", "You are a helpful assistant."));
+        String combinedPrompt = prompt + "보낸 자소서를 참고해서 답변은 내가 할꺼니까 모의 면접 문제만 한국어로 문제를 내줘";
+        messages.put(new JSONObject().put("role", "user").put("content", combinedPrompt));
+
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("messages", messages);
+        jsonBody.put("max_tokens", 1000);
+        jsonBody.put("temperature", 0.8);
+        jsonBody.put("model", "gpt-4");
+
+        try{
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.openai.com/v1/chat/completions"))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + API_KEY)
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody.toString()))
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            responeBody = extractAnswer(response.body());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return responeBody;
+    }
+
+    public String analysisAnswer(String prompt){
+        String responeBody = "";
+
+        JSONArray messages = new JSONArray();
+        messages.put(new JSONObject().put("role", "system").put("content", "You are a helpful assistant."));
+        String combinedPrompt = prompt + "이게 내가 진행한 면접 질문이랑 답변인데 답변에서 고칠점이랑 잘한 점 등을 분석해줘";
+        messages.put(new JSONObject().put("role", "user").put("content", combinedPrompt));
+
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("messages", messages);
+        jsonBody.put("max_tokens", 1000);
+        jsonBody.put("temperature", 0.8);
+        jsonBody.put("model", "gpt-4");
+
+        try{
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.openai.com/v1/chat/completions"))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + API_KEY)
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody.toString()))
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            responeBody = extractAnswer(response.body());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return responeBody;
     }
 }

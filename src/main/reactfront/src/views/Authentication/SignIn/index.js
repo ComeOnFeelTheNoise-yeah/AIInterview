@@ -26,12 +26,12 @@ export default function SignIn({setAuthView}){
 
         const signInResponse = await signInApi(data);
         if(!signInResponse){
-            alert('로그인 실패');
+            alert('이메일 또는 비밀번호가 일치하지 않습니다');
             return;
         }
 
         if(!signInResponse.result){
-            alert('로그인 실패');
+            alert('이메일 또는 비밀번호가 일치하지 않습니다');
             return;
         }
         const {token, exprTime, user} = signInResponse.data;
@@ -83,13 +83,14 @@ export default function SignIn({setAuthView}){
                         </Box>
                     </label>
                 </div>
-                <div style={{align :"center"}}>
-                    <text style={{
-                        position: 'absolute', top: "55.4%",
-                        left: "69.88%", transform: "translate( -70.1%, -66.88%)",fontSize : "22px",color : "white"
-                    }}>
-                        당신의 면접을 확실하게 준비해줄<br/> AI프로젝트 <br/>Be With you에 가입하세요!
-                    </text>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: "55.4%", left: "65.88%", transform: "translate(-50%, -50%)" }}>
+                    <Typography variant="h5" component="div" color="white" style={{ textAlign: 'center',  fontWeight: 550}}>
+                        당신의 면접을 확실하게 준비해줄
+                        <br />
+                        AI 프로젝트
+                        <br />
+                        Be With You에 가입하세요!
+                    </Typography>
                 </div>
                 <img alt="loginBackground" src="/img/img/LoginSignINBtn.png" width="10%" onClick={() => signInHandler()} style={{
                     position: 'absolute', top: "70.1%",

@@ -18,4 +18,15 @@ public class GptController {
     public String ask(@RequestBody String prompt){
         return gptService.ask(prompt);
     }
+
+    @PostMapping("/question")
+    public String question(@RequestBody String prompt){
+        return gptService.question(prompt);
+    }
+
+    @PostMapping("/analysisAnswer")
+    public String analysisAnswer(@RequestBody String prompt){
+        return gptService.analysisAnswer(prompt);
+    }
+
 }

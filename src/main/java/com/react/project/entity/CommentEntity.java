@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -21,5 +23,10 @@ public class CommentEntity {
     private String commentContent;
     private String commentUserProfile;
     private String commentUserNickname;
-    private String commentWriteDate;
+    private LocalDateTime commentWriteDate;
+
+    @PrePersist
+    public void prePersist() {
+        this.commentWriteDate = LocalDateTime.now();
+    }
 }

@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -19,13 +22,11 @@ public class BoardEntity {
     private String boardTitle;
     private String boardContent;
     private String boardImage;
-    private String boardVideo;
-    private String boardFile;
     private String boardWriterEmail;
     private String boardWriterProfile;
     private String boardWriterNickname;
-    private String boardWriterDate;
+    private String boardWriteDate;
     private int boardClickCount;
-    private int boardLikesCount;
+    private int boardLikeCount;
     private int boardCommentCount;
 }

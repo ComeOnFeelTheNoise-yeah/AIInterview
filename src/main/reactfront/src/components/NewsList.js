@@ -24,7 +24,7 @@ const Title = styled.h1`
     font-size: 2.5rem;
     margin-bottom: 2rem;
     font-weight: bold;
-    color: #333;
+    color: #999aae;
 `;
 
 const NewsList = () => {
@@ -39,7 +39,8 @@ const NewsList = () => {
                 const response = await axios.get(
                     'https://newsapi.org/v2/everything?q=취업 OR 구인 OR 구직&language=ko&apiKey=0bacc4212d814944a2ba59ee7cdc2e1b',
                 );
-                setArticles(response.data.articles);
+                const articlesFromResponse = response.data.articles;
+                setArticles(articlesFromResponse);
             } catch(e) {
                 console.log(e);
             }
@@ -47,7 +48,6 @@ const NewsList = () => {
         };
         fetchData();
     }, []);
-
     if (loading) {
         return <NewsListBlock>대기 중...</NewsListBlock>
     }
@@ -65,8 +65,21 @@ const NewsList = () => {
                 ))}
             </div>
             <div>
-                <img src={selectedImage} alt="Selected Thumbnail" style={{width: '460px', height: '410px', marginTop: '80px'}} />
+                {selectedImage ? (
+                    <img
+                        src={selectedImage}
+                        alt="Selected Thumbnail"
+                        style={{width: '460px', height: '410px', marginTop: '80px'}}
+                    />
+                ) : (
+                    <img
+                        src="/img/img/TodayNews.png" // 기본 이미지 경로를 지정해주세요.
+                        alt="Default Thumbnail"
+                        style={{width: '460px', height: '410px', marginTop: '80px'}}
+                    />
+                )}
             </div>
+
         </NewsListBlock>
     );
 };

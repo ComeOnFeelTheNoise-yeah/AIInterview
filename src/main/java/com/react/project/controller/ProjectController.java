@@ -16,31 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/project")
 public class ProjectController {
-
-    @Autowired
-    BoardService boardService;
-
     @GetMapping("/")
     public String getProject(@AuthenticationPrincipal String userEmail){
         return "로그인된 사용자는 " + userEmail + "입니다. ";
-    }
-    @GetMapping("/top3")
-    public ResponseDto<List<BoardEntity>> getTop3(){
-        return boardService.getTop3();
-    }
-
-    @GetMapping("/list")
-    public ResponseDto<List<BoardEntity>> getList(){
-        return boardService.getList();
-    }
-
-    @GetMapping("/popularSearchList")
-    public ResponseDto<List<PopularSearchEntity>> getPopularSearchList(){
-        return boardService.getPopularSearchList();
-    }
-
-    @GetMapping("/search/{boardTitle}")
-    public ResponseDto<List<BoardEntity>> getSearchList(@PathVariable("boardTitle") String title){
-        return null;
     }
 }

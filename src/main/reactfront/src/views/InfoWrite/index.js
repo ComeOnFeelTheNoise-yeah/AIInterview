@@ -5,26 +5,76 @@ import {
     Container,
     Typography,
     TextField,
-    IconButton
+    IconButton, DialogTitle, ListItemText, List, ListItem, DialogActions, DialogContent, Dialog
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {useCookies} from "react-cookie";
 import axios from "axios";
 
 export default function InfoWrite() {
     const [view, setView] = useState('new');
-    const [openDialog, setOpenDialog] = useState(false);
     const [questions, setQuestions] = useState(["", "", ""]);
     const [answers, setAnswers] = useState(["", "", ""]);
     const [userEmail, setUserEmail] = useState(''); // 사용자 이메일 상태 추가
     const [cookies] = useCookies(['token']);
+    const [title, setTitle] = useState('');
+    const [openDialog, setOpenDialog] = useState(false);  // 팝업창 상태
+    const [titlesList, setTitlesList] = useState([]);  // 제목 목록 상태
+    const [contentId, setContentId] = useState(null);
+
+    const openTitleDialog = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/get-titles?userEmail=${userEmail}`);
+            setTitlesList(response.data);  // 제목 목록 설정
+            setOpenDialog(true);  // 팝업창 열기
+        } catch (error) {
+            console.error("Error loading titles:", error);
+        }
+    };
+
+    const loadSelectedIntroduceContent = async (selectedTitle) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/get-content-by-title?userEmail=${userEmail}&title=${selectedTitle}`);
+            const data = response.data;
+
+            if (data && data.introContent) {
+                const loadedContent = JSON.parse(data.introContent);
+                const loadedQuestions = loadedContent.map(item => item.question);
+                const loadedAnswers = loadedContent.map(item => item.answer);
+
+                setContentId(data.id);
+                setTitle(selectedTitle);
+                setQuestions(loadedQuestions);
+                setAnswers(loadedAnswers);
+                setOpenDialog(false);
+            }
+        } catch (error) {
+            console.error("Error loading introduce content:", error);
+        }
+    };
+
+    const deleteIntroduceContent = async (selectedTitle) => {
+        try {
+            await axios.delete(`http://localhost:8080/delete-content`, {
+                params: {
+                    userEmail: userEmail,
+                    title: selectedTitle
+                }
+            });
+            alert('자소서가 성공적으로 삭제되었습니다.');
+            openTitleDialog(); // 삭제 후 제목 목록을 다시 로드합니다.
+        } catch (error) {
+            console.error("Error deleting introduce content:", error);
+        }
+    };
+
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
 
     useEffect(() => {
-        // 현재 사용자의 이메일을 가져오는 함수
         const fetchUserEmail = async () => {
             const token = cookies.token;
 
@@ -53,7 +103,9 @@ export default function InfoWrite() {
         }));
 
         const data = {
-            userEmail: userEmail,  // 상태에서 가져온 이메일 사용
+            id: contentId,
+            userEmail: userEmail,
+            title: title,
             introContent: JSON.stringify(introContent)
         };
 
@@ -71,6 +123,7 @@ export default function InfoWrite() {
                     alert('저장이 성공적으로 완료되었습니다.');
                     // 상태 초기화
                     setView('new');
+                    setTitle("");
                     setQuestions(["", "", ""]);
                     setAnswers(["", "", ""]);
                 } else {
@@ -129,6 +182,7 @@ export default function InfoWrite() {
     };
 
     const resetContent = () => {
+        setTitle("");
         setQuestions(["", "", ""]);
         setAnswers(["", "", ""]);
     };
@@ -137,10 +191,31 @@ export default function InfoWrite() {
         <Container maxWidth="md" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '40px' }}>
             <Box display="flex" flexDirection="row" width="100%" justifyContent="center" position="relative">
                 <Typography variant="h4">자소서 작성</Typography>
-                <Button variant="contained" onClick={loadIntroduceContent} style={{ position: 'absolute', right: 0, top: 0 }}>
+                <Button variant="contained" onClick={openTitleDialog} style={{ position: 'absolute', right: 0, top: 0 }}>
                     자소서 불러오기
                 </Button>
             </Box>
+
+            <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+                <DialogTitle>자소서 선택</DialogTitle>
+                <DialogContent>
+                    <List>
+                        {titlesList.map((title, index) => (
+                            <ListItem key={index}>
+                                <ListItemText primary={title} onClick={() => loadSelectedIntroduceContent(title)} />
+                                <IconButton edge="end" onClick={() => deleteIntroduceContent(title)}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </ListItem>
+                        ))}
+                    </List>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDialog(false)} color="primary">
+                        취소
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             {view === 'default' && <Typography variant="h6">자소서 작성 메뉴를 선택해주세요.</Typography>}
             {view === 'load' && <Typography variant="h6">저장된 자소서를 보여주는 화면</Typography>}
@@ -148,6 +223,14 @@ export default function InfoWrite() {
             {view === 'new' && (
                 <>
                     <Typography variant="h6">자소서를 완성해주세요!</Typography>
+                    <TextField
+                        fullWidth
+                        label="자소서 제목"
+                        variant="outlined"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        style={{ marginBottom: '20px', marginTop: '30px'}} // 스타일은 필요에 따라 조정
+                    />
                     {questions.map((question, index) => (
                         <Box key={index} mt={2} width="100%">
                             <TextField
@@ -177,7 +260,7 @@ export default function InfoWrite() {
                             <RemoveIcon />
                         </IconButton>
                     </Box>
-                    <Box mt={3} width="100%" display="flex" justifyContent="center">
+                    <Box mt={3} mb={5} width="100%" display="flex" justifyContent="center">
                         <Button variant="contained" color="success" onClick={saveIntroduceContent}>
                             저장
                         </Button>

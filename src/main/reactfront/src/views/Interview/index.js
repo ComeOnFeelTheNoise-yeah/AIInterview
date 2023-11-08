@@ -19,6 +19,7 @@ import interviewImage from '../../assets/images/interview_bg.gif';
 import LoadingInterview from "../../components/LoadingInterview";
 import QuestionCheck from "../../components/QuestionCheck";
 import LoadingAnalyze from "../../components/LoadingAnalyze";
+import interviewer from "../../assets/video/interviewer.mp4";
 
 const TextToSpeech = ({ textToRead }) => {
     const playTextToSpeech = () => {
@@ -495,8 +496,8 @@ export default function Interview() {
                                             <TextToSpeech textToRead={problems[currentProblemIndex].content} />
                                         </div>
                                         <div style={{ marginTop: '20px', marginBottom: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-                                            <div style={{ flex: 1, height: '500px' }}>
-                                                {showImage && <img alt="people" src="/img/img/people.jpg" style={{ height: '100%', width: 'auto', margin: '0px 10px 0px 0px' }} />}
+                                            <div style={{ flex: 1 }}>
+                                                <video muted autoPlay playsInline loop ref={videoRef} style={{ width: '500px', height: '500px', marginTop: '5px', marginRight: '20px' }}><source src={interviewer} type="video/mp4" /></video>
                                             </div>
                                             <div style={{ flex: 1, height: '500px' }}>
                                                 <video ref={videoRef} autoPlay playsInline style={{ height: '100%', width: 'auto' }}></video>

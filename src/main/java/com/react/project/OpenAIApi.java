@@ -10,7 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class OpenAIApi {
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "API KEY";
 
     public String ask(String prompt){
         String responeBody = "";

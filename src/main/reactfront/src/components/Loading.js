@@ -1,5 +1,5 @@
 import React from "react";
-import book from '../assets/images/loadinganalysis.gif';
+import book from '../assets/images/loading.gif';
 import {Box, Typography} from "@mui/material";
 
 const Loading = () => {
